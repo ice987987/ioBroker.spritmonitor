@@ -1,0 +1,89 @@
+{
+    "common": {
+        "name": "spritmonitor",
+        "version": "0.0.1-beta.1",
+        "news": {
+            "0.0.1-beta.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版",
+                "uk": "початковий випуск"
+            }
+        },
+        "title": "Spritmonitor",
+        "titleLang": {
+            "en": "Spritmonitor",
+            "de": "Spritmonitor",
+            "ru": "Спритмонитор",
+            "pt": "Spritmonitor",
+            "nl": "Spritmonitor",
+            "fr": "Moniteur d'esprit",
+            "it": "Spritmonitor",
+            "es": "monitor de espíritu",
+            "pl": "Spritmonitor",
+            "zh-cn": "精神监测器",
+            "uk": "Спритмонітор"
+        },
+        "desc": {
+            "en": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
+            "de": "Mit diesem Adapter können Sie Ihren Kraftstoffverbrauch über spritmonitor.de verwalten.",
+            "ru": "Этот адаптер позволяет вам управлять расходом топлива через spritmonitor.de.",
+            "pt": "Este adaptador permite que você gerencie seu consumo de combustível via spritmonitor.de.",
+            "nl": "Met deze adapter kunt u uw brandstofverbruik beheren via spritmonitor.de.",
+            "fr": "Cet adaptateur vous permet de gérer votre consommation de carburant via spritmonitor.de.",
+            "it": "Questo adattatore consente di gestire il consumo di carburante tramite spritmonitor.de.",
+            "es": "Este adaptador le permite administrar su consumo de combustible a través de spritmonitor.de.",
+            "pl": "Ten adapter umożliwia zarządzanie zużyciem paliwa za pośrednictwem spritmonitor.de.",
+            "zh-cn": "该适配器允许您通过 spritmonitor.de 管理您的油耗。",
+            "uk": "Цей адаптер дозволяє вам керувати споживанням палива через spritmonitor.de."
+        },
+        "authors": [
+            "ice987987 <mathias.frei1@gmail.com>"
+        ],
+        "keywords": [
+            "spritmonitor",
+            "fuel",
+            "gas",
+            "diesel"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "spritmonitor.svg",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ice987987/ioBroker.spritmonitor/main/admin/spritmonitor.svg",
+        "readme": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "vehicle",
+        "compact": true,
+        "connectionType": "cloud",
+        "dataSource": "poll",
+        "adminUI": {
+            "config": "json"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=4.0.23"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=6.2.21"
+            }
+        ]
+    },
+    "native": {
+        "applicationKey": "",
+        "requestInterval": 24
+    },
+    "objects": [],
+    "instanceObjects": []
+}

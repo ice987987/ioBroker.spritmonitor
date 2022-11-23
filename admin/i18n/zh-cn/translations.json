@@ -1,0 +1,6 @@
+{
+    "applicationKey": "应用密钥",
+    "applicationKeyHint": "在<a href='https://www.spritmonitor.de/en/my_account/change_password.html' target='_blank'>此处</a>获取“Spritmonitor 应用程序密钥”。 （格式：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx）",
+    "requestInterval": "检索值的时间间隔",
+    "requestIntervalHint": "以小时为单位（最少 6 小时；最多 168 小时）"
+}

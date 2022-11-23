@@ -1,0 +1,6 @@
+{
+    "applicationKey": "Chave do aplicativo",
+    "applicationKeyHint": "Obtenha sua 'chave de aplicativo Spritmonitor' <a href='https://www.spritmonitor.de/en/my_account/change_password.html' target='_blank'>aqui</a>. (formato: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+    "requestInterval": "Intervalo de tempo para recuperar valores",
+    "requestIntervalHint": "em horas (min. 6h; máx. 168h)"
+}

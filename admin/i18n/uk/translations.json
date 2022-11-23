@@ -1,0 +1,6 @@
+{
+    "applicationKey": "Ключ програми",
+    "applicationKeyHint": "Отримайте свій «ключ програми Spritmonitor» <a href='https://www.spritmonitor.de/en/my_account/change_password.html' target='_blank'>тут</a>. (формат: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+    "requestInterval": "Інтервал часу для отримання значень",
+    "requestIntervalHint": "в годинах (мін. 6 год; макс. 168 год)"
+}

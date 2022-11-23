@@ -1,0 +1,6 @@
+{
+	"applicationKey": "Application key",
+	"applicationKeyHint": "Get your 'Spritmonitor Application Key' <a href='https://www.spritmonitor.de/en/my_account/change_password.html' target='_blank'>here</a>. (format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+	"requestInterval": "Time interval to retrieve values",
+	"requestIntervalHint": "in hours (min. 6h; max. 168h)"
+}

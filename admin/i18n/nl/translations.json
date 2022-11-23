@@ -1,0 +1,6 @@
+{
+    "applicationKey": "Applicatie sleutel",
+    "applicationKeyHint": "Download <a href='https://www.spritmonitor.de/en/my_account/change_password.html' target='_blank'>hier</a> uw 'Spritmonitor Application Key'. (formaat: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+    "requestInterval": "Tijdsinterval om waarden op te halen",
+    "requestIntervalHint": "in uren (min. 6u; max. 168u)"
+}
