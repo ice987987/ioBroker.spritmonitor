@@ -13,9 +13,7 @@ const axios = require('axios');
 
 // variables
 const isValidApplicationKey = /[a-zA-Z0-9]{50}/; // format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-let vehicleIDs = [];
-let getVehiclesResult = {};
-let getTanksResult = {};
+const vehicleIDs = [];
 
 class Spritmonitor extends utils.Adapter {
 	/**
@@ -925,6 +923,7 @@ class Spritmonitor extends utils.Adapter {
 	onUnload(callback) {
 		try {
 			// Here you must clear all timeouts or intervals that may still be active
+			this.requestInterval && clearInterval(this.requestInterval);
 
 			callback();
 		} catch (e) {
