@@ -32,6 +32,8 @@ class Spritmonitor extends utils.Adapter {
 
 		this.requestClient = axios.create();
 
+		this.vehicles = {};
+
 		this.requestInterval = null;
 		this.firstStart = true;
 	}
@@ -56,7 +58,7 @@ class Spritmonitor extends utils.Adapter {
 		// check requestInterval
 		if (this.config.requestInterval <= 6 && this.config.requestInterval >= 168) {
 			this.log.error(
-				'"Time interval to retrieve values" is not valid (6 <= t <= 168 hours) (ERR_#003)',
+				'"Time interval to retrieve values" is not valid (6 <= t <= 168 hours) (ERR_#002)',
 			);
 			return;
 		}
@@ -66,6 +68,8 @@ class Spritmonitor extends utils.Adapter {
 		try {
 			// get all vehicles
 			await this.getVehicles();
+			await this.createObjects(this.vehicles);
+			await this.fillObjectsVehicles(this.vehicles);
 
 			// some more variables
 			for (let i = 0; i < vehicleIDs.length; i++) {
@@ -74,14 +78,11 @@ class Spritmonitor extends utils.Adapter {
 				await this.getCostnotes(vehicleIDs[i]);
 				await this.getReminders();
 			}
-		} catch (error) {
-			this.log.error(`${error} (ERR_#0xx)`);
-		}
 
-		// start interval
-		this.requestInterval = setInterval(async () => {
-			try {
+			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
+			this.requestInterval = setInterval(async () => {
 				await this.getVehicles();
+				await this.fillObjectsVehicles(this.vehicles);
 
 				for (let i = 0; i < vehicleIDs.length; i++) {
 					await this.getTanks(vehicleIDs[i]);
@@ -89,10 +90,11 @@ class Spritmonitor extends utils.Adapter {
 					await this.getCostnotes(vehicleIDs[i]);
 					await this.getReminders();
 				}
-			} catch (error) {
-				this.log.debug(`${error} (ERR_#015)`);
-			}
-		}, this.config.requestInterval * 60 * 60 * 1000); // 1h = 3600000ms
+			}, this.config.requestInterval * 60 * 60 * 1000); // 1h = 3600000ms
+
+		} catch (error) {
+			this.log.error(`${error} (ERR_#003)`);
+		}
 	}
 
 	// https://api.spritmonitor.de/doc
@@ -103,24 +105,14 @@ class Spritmonitor extends utils.Adapter {
 			url: 'https://api.spritmonitor.de/v1/vehicles.json',
 			headers: {
 				'Authorization': `Bearer ${this.config.applicationKey}`,
-				'Application-Id': '81699ea0a8cf1e252cbbf5e582f3aad3',
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
-			.then(async (response) => {
+			.then((response) => {
 				this.log.debug(`[getVehiclesData]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
-				if (this.firstStart) {
-					try {
-						// create objects
-						await this.createObjects(response.data);
-						this.firstStart = false;
-					} catch (error) {
-						this.log.error(`${error} (ERR_#0xx)`);
-					}
-				}
-
-				await this.fillObjectsVehicles(response.data);
+				this.vehicles = response.data;
 
 			})
 			.catch((error) => {
@@ -141,12 +133,8 @@ class Spritmonitor extends utils.Adapter {
 	// https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/objectsschema.md
 	// https://github.com/ioBroker/ioBroker/blob/master/doc/STATE_ROLES.md#state-roles
 	async createObjects(vehicles) {
-		// this.log.debug(`[createObjects]: listVehicles: ${JSON.stringify(vehicles)}`);
-		if (Object.keys(vehicles).length !== 0) {
-
-			this.log.debug(
-				`[createObjects]: start objects creation for ${Object.keys(vehicles).length} vehicle${Object.keys(vehicles).length > 1 ? 's' : ''}...`,
-			);
+		if (vehicles && Object.keys(vehicles).length !== 0 && typeof (vehicles) === 'object') {
+			this.log.debug(`[createObjects]: start objects creation for ${Object.keys(vehicles).length} vehicle${Object.keys(vehicles).length > 1 ? 's' : ''}...`);
 
 			for (let i = 0; i < Object.keys(vehicles).length; i++) {
 				// /vehicles.json
@@ -161,8 +149,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.id`, {
 					type: 'state',
 					common: {
-						name: 'ID',
-						desc: 'ID',
+						name: 'Vehicle ID',
+						desc: 'Vehicle ID',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -233,8 +221,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tripunit`, {
 					type: 'state',
 					common: {
-						name: 'tripunit',
-						desc: 'tripunit',
+						name: 'Trip unit',
+						desc: 'Trip unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -257,8 +245,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.maintank`, {
 					type: 'state',
 					common: {
-						name: 'maintank',
-						desc: 'maintank',
+						name: 'Maintank',
+						desc: 'Maintank',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -337,6 +325,7 @@ class Spritmonitor extends utils.Adapter {
 					},
 					native: {},
 				});
+				/*
 				// create channel "rankingInfo"
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.rankingInfo`, {
 					type: 'channel',
@@ -417,6 +406,7 @@ class Spritmonitor extends utils.Adapter {
 					},
 					native: {},
 				});
+				*/
 				// /vehicle/{vehicleId}/tanks.json
 				// create channel "tanks"
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks`, {
@@ -429,8 +419,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.id`, {
 					type: 'state',
 					common: {
-						name: 'id',
-						desc: 'id',
+						name: 'Tank ID',
+						desc: 'Tank ID',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -519,8 +509,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.consumptionunitid`, {
 					type: 'state',
 					common: {
-						name: 'Numerical id of consumption format',
-						desc: 'Numerical id of consumption format',
+						name: 'Numerical ID of consumption format',
+						desc: 'Numerical ID of consumption format',
 						type: 'number',
 						role: 'state',
 						states: {
@@ -545,8 +535,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2`, {
 					type: 'state',
 					common: {
-						name: 'Emission of CO2 for this vehicle in g/km',
-						desc: 'Emission of CO2 for this vehicle in g/km',
+						name: 'Emission of CO₂ for this vehicle in g/km',
+						desc: 'Emission of CO₂ for this vehicle in g/km',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -557,8 +547,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2tripsum`, {
 					type: 'state',
 					common: {
-						name: 'Amount of driven distance for which CO2 was calculated',
-						desc: 'Amount of driven distance for which CO2 was calculated',
+						name: 'Amount of driven distance for which CO₂ was calculated',
+						desc: 'Amount of driven distance for which CO₂ was calculated',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -569,8 +559,8 @@ class Spritmonitor extends utils.Adapter {
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2quantitysum`, {
 					type: 'state',
 					common: {
-						name: 'Amount of emissioned CO2 in kg',
-						desc: 'Amount of emissioned CO2 in kg',
+						name: 'Amount of emissioned CO₂ in kg',
+						desc: 'Amount of emissioned CO₂ in kg',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -729,9 +719,8 @@ class Spritmonitor extends utils.Adapter {
 			this.log.debug('[createObjects]: Objects created...');
 
 		} else {
-			throw new Error('No Vehicles found, no Objects created. Check API (ERR_#0xx).');
+			throw new Error('No Vehicles found, no Objects created. Check API (ERR_#004).');
 		}
-
 	}
 
 	async fillObjectsVehicles(vehicles) {
@@ -750,12 +739,14 @@ class Spritmonitor extends utils.Adapter {
 			this.setStateAsync(`${vehicles[i].id}.picture_ts`, { val: vehicles[i].picture_ts, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.bcconsumptionunit`, { val: vehicles[i].bcconsumptionunit, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.country`, { val: vehicles[i].country, ack: true });
+			/*
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.min`, { val: Number(vehicles[i].rankingInfo.min), ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.avg`, { val: Number(vehicles[i].rankingInfo.avg), ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.max`, { val: Number(vehicles[i].rankingInfo.max), ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.unit`, { val: vehicles[i].rankingInfo.unit, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.total`, { val: vehicles[i].rankingInfo.total, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.rank`, { val: vehicles[i].rankingInfo.rank, ack: true });
+			*/
 
 			vehicleIDs.push(vehicles[i].id);
 			// this.log.debug(`[fillObjectsVehicles]: ${vehicleIDs}`);
@@ -768,7 +759,7 @@ class Spritmonitor extends utils.Adapter {
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tanks.json`,
 			headers: {
 				'Authorization': `Bearer ${this.config.applicationKey}`,
-				'Application-Id': '81699ea0a8cf1e252cbbf5e582f3aad3',
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
@@ -820,7 +811,7 @@ class Spritmonitor extends utils.Adapter {
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/fuelings.json?limit=10000`,
 			headers: {
 				'Authorization': `Bearer ${this.config.applicationKey}`,
-				'Application-Id': '81699ea0a8cf1e252cbbf5e582f3aad3',
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
@@ -854,7 +845,7 @@ class Spritmonitor extends utils.Adapter {
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/costsnotes.json?limit=10000`,
 			headers: {
 				'Authorization': `Bearer ${this.config.applicationKey}`,
-				'Application-Id': '81699ea0a8cf1e252cbbf5e582f3aad3',
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
@@ -888,7 +879,7 @@ class Spritmonitor extends utils.Adapter {
 			url: `https://api.spritmonitor.de/v1/reminders.json`,
 			headers: {
 				'Authorization': `Bearer ${this.config.applicationKey}`,
-				'Application-Id': '81699ea0a8cf1e252cbbf5e582f3aad3',
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
