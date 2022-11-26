@@ -1,9 +1,9 @@
 {
 	"common": {
 		"name": "spritmonitor",
-		"version": "0.0.1-beta.2",
+		"version": "0.0.1-beta.3",
 		"news": {
-			"0.0.1-beta.2": {
+			"0.0.1-beta.3": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",
 				"ru": "Начальная версия",

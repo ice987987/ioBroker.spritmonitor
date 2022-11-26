@@ -32,7 +32,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 ## Controls
 
--   Currently there are no controls available.
+-   `.ACTIONS.UPDATE`: Update values
 
 ## Available values (readonly)
 
@@ -50,7 +50,6 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.[vehicleID].picture_ts`: picture_ts
 -   `.[vehicleID].bcconsumptionunit`: Bordcomputer consumption unit
 -   `.[vehicleID].country`: Country
-
 -   `.[vehicleID].tank.id`: Tank ID
 -   `.[vehicleID].tank.fuelsorttype`: Type of tank
 -   `.[vehicleID].tank.quantityunittype`: Quantity type of tank
@@ -68,18 +67,15 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.[vehicleID].tank.tripsumunit`: Unit for driven distance (km, mi)
 -   `.[vehicleID].tank.quantitysum`: Amount of tanked fuel for this tank (for consumption calculation)
 -   `.[vehicleID].tank.quantitysumunit`: Unit for tanked fuel (l, GAL, kg, kWh, ...)
-
 -   `.[vehicleID].fuelings.raw`: A JSON array of fuelings
-
 -   `.[vehicleID].costnotes.raw`: A JSON array of costs / notes
-
 -   `.reminders.raw`: A JSON array of reminders
 
 ## Changelog
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.1-beta.2 **WORK IN PROGRESS**
+### 0.0.1-beta.3 **WORK IN PROGRESS**
 
 -   (ice987987) initial release
 

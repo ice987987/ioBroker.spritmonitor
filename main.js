@@ -716,6 +716,31 @@ class Spritmonitor extends utils.Adapter {
 				},
 				native: {},
 			});
+			// create channel "ACTIONS"
+			await this.setObjectNotExistsAsync(`ACTIONS`, {
+				type: 'channel',
+				common: {
+					name: 'Action Commands',
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.UPDATE`, {
+				type: 'state',
+				common: {
+					name: 'Update values',
+					desc: 'Update values',
+					type: 'boolean',
+					def: false,
+					role: 'button',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+
+			// subscribeStates
+			this.subscribeStates('ACTIONS.UPDATE');
+
 			this.log.debug('[createObjects]: Objects created...');
 
 		} else {
@@ -922,35 +947,40 @@ class Spritmonitor extends utils.Adapter {
 		}
 	}
 
-	// If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-	// You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-	// /**
-	//  * Is called if a subscribed object changes
-	//  * @param {string} id
-	//  * @param {ioBroker.Object | null | undefined} obj
-	//  */
-	// onObjectChange(id, obj) {
-	// 	if (obj) {
-	// 		// The object was changed
-	// 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-	// 	} else {
-	// 		// The object was deleted
-	// 		this.log.info(`object ${id} deleted`);
-	// 	}
-	// }
-
 	/**
 	 * Is called if a subscribed state changes
 	 * @param {string} id
 	 * @param {ioBroker.State | null | undefined} state
 	 */
-	onStateChange(id, state) {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+	async onStateChange(id, state) {
+		if (state !== null && state !== undefined) {
+			if (state.ack === false) {
+				this.log.debug(`[onStateChange]: id: ${id}; state: ${JSON.stringify(state)}`);
+
+				const command = id.split('.')[3];
+				this.log.debug(`[onStateChange]: command: ${command}`);
+
+				if (command === 'UPDATE' && state.val) {
+					await this.getVehicles();
+					await this.fillObjectsVehicles(this.vehicles);
+
+					for (let i = 0; i < vehicleIDs.length; i++) {
+						await this.getTanks(vehicleIDs[i]);
+						await this.getFuelings(vehicleIDs[i]);
+						await this.getCostnotes(vehicleIDs[i]);
+						await this.getReminders();
+					}
+				}
+
+			} else {
+				// The state was changed by system
+				this.log.debug(
+					`[onStateChange]: state ${id} changed: ${state.val} (ack = ${state.ack}). NO ACTION PERFORMED.`,
+				);
+			}
 		} else {
 			// The state was deleted
-			this.log.info(`state ${id} deleted`);
+			this.log.debug(`[onStateChange]: state ${id} was changed. NO ACTION PERFORMED.`);
 		}
 	}
 }
