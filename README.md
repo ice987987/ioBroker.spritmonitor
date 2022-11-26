@@ -75,7 +75,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.1-beta.3 **WORK IN PROGRESS**
+### 0.0.1 (26.11.2022)
 
 -   (ice987987) initial release
 
