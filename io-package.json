@@ -1,81 +1,101 @@
 {
-	"common": {
-		"name": "spritmonitor",
-		"version": "0.0.1",
-		"news": {
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"zh-cn": "首次出版",
-				"uk": "початковий випуск"
-			}
-		},
-		"titleLang": {
-			"en": "Spritmonitor",
-			"de": "Spritmonitor",
-			"ru": "Спритмонитор",
-			"pt": "Spritmonitor",
-			"nl": "Spritmonitor",
-			"fr": "Moniteur d'esprit",
-			"it": "Spritmonitor",
-			"es": "monitor de espíritu",
-			"pl": "Spritmonitor",
-			"zh-cn": "精神监测器",
-			"uk": "Спритмонітор"
-		},
-		"desc": {
-			"en": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
-			"de": "Mit diesem Adapter können Sie Ihren Kraftstoffverbrauch über spritmonitor.de verwalten.",
-			"ru": "Этот адаптер позволяет вам управлять расходом топлива через spritmonitor.de.",
-			"pt": "Este adaptador permite que você gerencie seu consumo de combustível via spritmonitor.de.",
-			"nl": "Met deze adapter kunt u uw brandstofverbruik beheren via spritmonitor.de.",
-			"fr": "Cet adaptateur vous permet de gérer votre consommation de carburant via spritmonitor.de.",
-			"it": "Questo adattatore consente di gestire il consumo di carburante tramite spritmonitor.de.",
-			"es": "Este adaptador le permite administrar su consumo de combustible a través de spritmonitor.de.",
-			"pl": "Ten adapter umożliwia zarządzanie zużyciem paliwa za pośrednictwem spritmonitor.de.",
-			"zh-cn": "该适配器允许您通过 spritmonitor.de 管理您的油耗。",
-			"uk": "Цей адаптер дозволяє вам керувати споживанням палива через spritmonitor.de."
-		},
-		"authors": ["ice987987 <mathias.frei1@gmail.com>"],
-		"keywords": ["spritmonitor", "fuel", "gas", "diesel"],
-		"license": "MIT",
-		"platform": "Javascript/Node.js",
-		"main": "main.js",
-		"icon": "spritmonitor.svg",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/ice987987/ioBroker.spritmonitor/main/admin/spritmonitor.svg",
-		"readme": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md",
-		"loglevel": "info",
-		"mode": "daemon",
-		"type": "vehicle",
-		"compact": true,
-		"connectionType": "cloud",
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=4.0.23"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=6.2.21"
-			}
-		]
-	},
-	"native": {
-		"applicationKey": "",
-		"requestInterval": 24
-	},
-	"objects": [],
-	"instanceObjects": []
+    "common": {
+        "name": "spritmonitor",
+        "version": "0.0.2-beta.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版",
+                "uk": "початковий випуск"
+            },
+            "0.0.2-beta.1": {
+                "en": "add possibility to add and delete values, add all tanks, add costsnotes.[year].raw and fuelings.[year].raw, update dependencies",
+                "de": "Möglichkeit zum Hinzufügen und Löschen von Werten hinzufügen, alle Tanks hinzufügen, Kostennotizen.[Jahr].Roh und Betankungen hinzufügen.[Jahr].Roh, Abhängigkeiten aktualisieren",
+                "ru": "добавить возможность добавлять и удалять значения, добавлять все баки, добавлять costnotes.[year].raw и Fuelings.[year].raw, обновлять зависимости",
+                "pt": "adicionar possibilidade de adicionar e excluir valores, adicionar todos os tanques, adicionar notas de custos.[ano].matéria-prima e abastecimentos.[ano].matéria-prima, atualizar dependências",
+                "nl": "mogelijkheid toegevoegd om waarden toe te voegen en te verwijderen, alle tanks toe te voegen, kostennotities toe te voegen.[jaar].raw en tankbeurten.[jaar].raw, afhankelijkheden bijwerken",
+                "fr": "ajouter la possibilité d'ajouter et de supprimer des valeurs, d'ajouter tous les réservoirs, d'ajouter des notes de coûts.[année].raw et carburants.[année].raw, mise à jour des dépendances",
+                "it": "aggiungi possibilità di aggiungere ed eliminare valori, aggiungere tutti i serbatoi, aggiungere note di costo.[anno].raw e rifornimenti.[anno].raw, aggiornare le dipendenze",
+                "es": "agregue la posibilidad de agregar y eliminar valores, agregar todos los tanques, agregar notas de costos.[año].sin procesar y combustibles.[año].sin procesar, actualizar dependencias",
+                "pl": "dodaj możliwość dodawania i usuwania wartości, dodaj wszystkie zbiorniki, dodaj notatki o kosztach.[rok].raw i tankowania.[rok].raw, aktualizacja zależności",
+                "uk": "додайте можливість додавати та видаляти значення, додавати всі танки, додавати примітки про витрати.[рік].raw і заправки.[рік].raw, оновлювати залежності",
+                "zh-cn": "添加添加和删除值的可能性，添加所有坦克，添加 costnotes.[year].raw 和 fuelings.[year].raw，更新依赖项"
+            }
+        },
+        "titleLang": {
+            "en": "Spritmonitor",
+            "de": "Spritmonitor",
+            "ru": "Спритмонитор",
+            "pt": "Spritmonitor",
+            "nl": "Spritmonitor",
+            "fr": "Moniteur d'esprit",
+            "it": "Spritmonitor",
+            "es": "monitor de espíritu",
+            "pl": "Spritmonitor",
+            "zh-cn": "精神监测器",
+            "uk": "Спритмонітор"
+        },
+        "desc": {
+            "en": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
+            "de": "Mit diesem Adapter können Sie Ihren Kraftstoffverbrauch über spritmonitor.de verwalten.",
+            "ru": "Этот адаптер позволяет вам управлять расходом топлива через spritmonitor.de.",
+            "pt": "Este adaptador permite que você gerencie seu consumo de combustível via spritmonitor.de.",
+            "nl": "Met deze adapter kunt u uw brandstofverbruik beheren via spritmonitor.de.",
+            "fr": "Cet adaptateur vous permet de gérer votre consommation de carburant via spritmonitor.de.",
+            "it": "Questo adattatore consente di gestire il consumo di carburante tramite spritmonitor.de.",
+            "es": "Este adaptador le permite administrar su consumo de combustible a través de spritmonitor.de.",
+            "pl": "Ten adapter umożliwia zarządzanie zużyciem paliwa za pośrednictwem spritmonitor.de.",
+            "zh-cn": "该适配器允许您通过 spritmonitor.de 管理您的油耗。",
+            "uk": "Цей адаптер дозволяє вам керувати споживанням палива через spritmonitor.de."
+        },
+        "authors": [
+            "ice987987 <mathias.frei1@gmail.com>"
+        ],
+        "keywords": [
+            "spritmonitor",
+            "fuel",
+            "gas",
+            "diesel"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "spritmonitor.svg",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ice987987/ioBroker.spritmonitor/main/admin/spritmonitor.svg",
+        "readme": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "vehicle",
+        "compact": true,
+        "connectionType": "cloud",
+        "dataSource": "poll",
+        "adminUI": {
+            "config": "json"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=4.0.23"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=6.2.21"
+            }
+        ]
+    },
+    "native": {
+        "applicationKey": "",
+        "requestInterval": 24
+    },
+    "objects": [],
+    "instanceObjects": []
 }

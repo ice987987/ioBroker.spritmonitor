@@ -26,8 +26,6 @@ class Spritmonitor extends utils.Adapter {
 		});
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
-		// this.on('objectChange', this.onObjectChange.bind(this));
-		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 
 		this.requestClient = axios.create();
@@ -46,17 +44,16 @@ class Spritmonitor extends utils.Adapter {
 		this.log.info('starting adapter "spritmonitor"...');
 
 		// The adapters config (in the instance object everything under the attribute "native") is accessible via this.config:
-		this.log.debug(`config.bearer_token: ${this.config.applicationKey}`);
+		this.log.debug(`config.applicationKey: ${this.config.applicationKey}`);
+		this.log.debug(`config.requestInterval: ${this.config.requestInterval}`);
 
 		// check applicationKey
 		if (!isValidApplicationKey.test(this.config.applicationKey)) {
-			this.log.error(
-				'"Application Key" is not valid (allowed format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) (ERR_#001)',
-			);
+			this.log.error('"Application Key" is not valid (allowed format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) (ERR_#001)');
 			return;
 		}
 		// check requestInterval
-		if (this.config.requestInterval <= 6 && this.config.requestInterval >= 168) {
+		if (!this.numberInRange(6, 168, this.config.requestInterval)) {
 			this.log.error(
 				'"Time interval to retrieve values" is not valid (6 <= t <= 168 hours) (ERR_#002)',
 			);
@@ -70,31 +67,28 @@ class Spritmonitor extends utils.Adapter {
 			await this.getVehicles();
 			await this.createObjects(this.vehicles);
 			await this.fillObjectsVehicles(this.vehicles);
-
-			// some more variables
 			for (let i = 0; i < vehicleIDs.length; i++) {
 				await this.getTanks(vehicleIDs[i]);
 				await this.getFuelings(vehicleIDs[i]);
-				await this.getCostnotes(vehicleIDs[i]);
-				await this.getReminders();
+				await this.getCostsnotes(vehicleIDs[i]);
 			}
+			await this.getReminders();
 
 			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
 			this.requestInterval = setInterval(async () => {
 				await this.getVehicles();
 				await this.fillObjectsVehicles(this.vehicles);
-
 				for (let i = 0; i < vehicleIDs.length; i++) {
 					await this.getTanks(vehicleIDs[i]);
 					await this.getFuelings(vehicleIDs[i]);
-					await this.getCostnotes(vehicleIDs[i]);
-					await this.getReminders();
+					await this.getCostsnotes(vehicleIDs[i]);
 				}
+				await this.getReminders();
 			}, this.config.requestInterval * 60 * 60 * 1000); // 1h = 3600000ms
-
 		} catch (error) {
 			this.log.error(`${error} (ERR_#003)`);
 		}
+
 	}
 
 	// https://api.spritmonitor.de/doc
@@ -119,6 +113,9 @@ class Spritmonitor extends utils.Adapter {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getVehiclesData]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
 				} else if (error.request) {
 					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
 					this.log.debug(`[getVehiclesData]: error request: ${error}`);
@@ -407,6 +404,7 @@ class Spritmonitor extends utils.Adapter {
 					native: {},
 				});
 				*/
+
 				// /vehicle/{vehicleId}/tanks.json
 				// create channel "tanks"
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks`, {
@@ -416,242 +414,260 @@ class Spritmonitor extends utils.Adapter {
 					},
 					native: {},
 				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.id`, {
-					type: 'state',
-					common: {
-						name: 'Tank ID',
-						desc: 'Tank ID',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.fuelsorttype`, {
-					type: 'state',
-					common: {
-						name: 'Type of tank',
-						desc: 'Type of tank',
-						type: 'number',
-						role: 'state',
-						states: {
-							1: 'Diesel',
-							2: 'Gasoline',
-							3: 'LPG',
-							4: 'CNG',
-							5: 'Electricity',
-							6: 'AdBlue',
-							7: 'Hydrogen'
+
+				let numbersOfTanks = 1;
+				if (vehicles[i].maintanktype === 3 || vehicles[i].maintanktype === 4) {
+					numbersOfTanks = 2;
+				}
+
+				for (let j = 1; j <= numbersOfTanks; j++) {
+
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}`, {
+						type: 'channel',
+						common: {
+							name: `Tank ${j}`,
 						},
-						min: 1,
-						max: 7,
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.quantityunittype`, {
-					type: 'state',
-					common: {
-						name: 'Quantity type of tank',
-						desc: 'Quantity type of tank',
-						type: 'number',
-						role: 'state',
-						states: {
-							1: 'Volume',
-							2: 'Weight (for CNG)',
-							3: 'Electricity'
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.id`, {
+						type: 'state',
+						common: {
+							name: 'Tank ID',
+							desc: 'Tank ID',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
 						},
-						min: 1,
-						max: 3,
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.name`, {
-					type: 'state',
-					common: {
-						name: 'Name of fueltype in tank',
-						desc: 'Name of fueltype in tank',
-						type: 'string',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.consumption`, {
-					type: 'state',
-					common: {
-						name: 'Consumption value of this fuel type',
-						desc: 'Consumption value of this fuel type',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.consumptionunit`, {
-					type: 'state',
-					common: {
-						name: 'Name of consumption unit',
-						desc: 'Name of consumption unit',
-						type: 'string',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.consumptionunitid`, {
-					type: 'state',
-					common: {
-						name: 'Numerical ID of consumption format',
-						desc: 'Numerical ID of consumption format',
-						type: 'number',
-						role: 'state',
-						states: {
-							1: 'km/l',
-							2: 'l/100km',
-							3: 'MPG (US)',
-							4: 'MPG (Imp)',
-							5: 'km/kg',
-							6: 'kg/100km',
-							7: 'mi/kg',
-							8: 'km/kWh',
-							9: 'kWh/100km',
-							10: 'mi/kWh'
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.fuelsorttype`, {
+						type: 'state',
+						common: {
+							name: 'Type of tank',
+							desc: 'Type of tank',
+							type: 'number',
+							role: 'state',
+							states: {
+								1: 'Diesel',
+								2: 'Gasoline',
+								3: 'LPG',
+								4: 'CNG',
+								5: 'Electricity',
+								6: 'AdBlue',
+								7: 'Hydrogen'
+							},
+							min: 1,
+							max: 7,
+							read: true,
+							write: false,
 						},
-						min: 1,
-						max: 10,
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2`, {
-					type: 'state',
-					common: {
-						name: 'Emission of CO₂ for this vehicle in g/km',
-						desc: 'Emission of CO₂ for this vehicle in g/km',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2tripsum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of driven distance for which CO₂ was calculated',
-						desc: 'Amount of driven distance for which CO₂ was calculated',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.co2quantitysum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of emissioned CO₂ in kg',
-						desc: 'Amount of emissioned CO₂ in kg',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.costsum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of money spent for fuel for this tank',
-						desc: 'Amount of money spent for fuel for this tank',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.costsumunit`, {
-					type: 'state',
-					common: {
-						name: 'Currency of the fuel expenses',
-						desc: 'Currency of the fuel expenses',
-						type: 'string',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.costtripsum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of driven distance for which the fuel expenses have been summed',
-						desc: 'Amount of driven distance for which the fuel expenses have been summed',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.tripsum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of driven distance for this tank (for consumption calculation)',
-						desc: 'Amount of driven distance for this tank (for consumption calculation)',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.tripsumunit`, {
-					type: 'state',
-					common: {
-						name: 'Unit for driven distance (km, mi)',
-						desc: 'Unit for driven distance (km, mi)',
-						type: 'string',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.quantitysum`, {
-					type: 'state',
-					common: {
-						name: 'Amount of tanked fuel for this tank (for consumption calculation)',
-						desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
-						type: 'number',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.quantitysumunit`, {
-					type: 'state',
-					common: {
-						name: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
-						desc: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
-						type: 'string',
-						role: 'state',
-						read: true,
-						write: false,
-					},
-					native: {},
-				});
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.quantityunittype`, {
+						type: 'state',
+						common: {
+							name: 'Quantity type of tank',
+							desc: 'Quantity type of tank',
+							type: 'number',
+							role: 'state',
+							states: {
+								1: 'Volume',
+								2: 'Weight (for CNG)',
+								3: 'Electricity'
+							},
+							min: 1,
+							max: 3,
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.name`, {
+						type: 'state',
+						common: {
+							name: 'Name of fueltype in tank',
+							desc: 'Name of fueltype in tank',
+							type: 'string',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.consumption`, {
+						type: 'state',
+						common: {
+							name: 'Consumption value of this fuel type',
+							desc: 'Consumption value of this fuel type',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.consumptionunit`, {
+						type: 'state',
+						common: {
+							name: 'Name of consumption unit',
+							desc: 'Name of consumption unit',
+							type: 'string',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.consumptionunitid`, {
+						type: 'state',
+						common: {
+							name: 'Numeric ID of consumption format',
+							desc: 'Numeric ID of consumption format',
+							type: 'number',
+							role: 'state',
+							states: {
+								1: 'km/l',
+								2: 'l/100km',
+								3: 'MPG (US)',
+								4: 'MPG (Imp)',
+								5: 'km/kg',
+								6: 'kg/100km',
+								7: 'mi/kg',
+								8: 'km/kWh',
+								9: 'kWh/100km',
+								10: 'mi/kWh'
+							},
+							min: 1,
+							max: 10,
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.co2`, {
+						type: 'state',
+						common: {
+							name: 'Emission of CO₂ for this vehicle in g/km',
+							desc: 'Emission of CO₂ for this vehicle in g/km',
+							type: 'number',
+							role: 'state',
+							unit: 'g/kg',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.co2tripsum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of driven distance for which CO₂ was calculated',
+							desc: 'Amount of driven distance for which CO₂ was calculated',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.co2quantitysum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of emissioned CO₂ in kg',
+							desc: 'Amount of emissioned CO₂ in kg',
+							type: 'number',
+							role: 'state',
+							unit: 'kg',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.costsum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of money spent for fuel for this tank',
+							desc: 'Amount of money spent for fuel for this tank',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.costsumunit`, {
+						type: 'state',
+						common: {
+							name: 'Currency of the fuel expenses',
+							desc: 'Currency of the fuel expenses',
+							type: 'string',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.costtripsum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of driven distance for which the fuel expenses have been summed',
+							desc: 'Amount of driven distance for which the fuel expenses have been summed',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.tripsum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of driven distance for this tank (for consumption calculation)',
+							desc: 'Amount of driven distance for this tank (for consumption calculation)',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.tripsumunit`, {
+						type: 'state',
+						common: {
+							name: 'Unit for driven distance (km, mi)',
+							desc: 'Unit for driven distance (km, mi)',
+							type: 'string',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.quantitysum`, {
+						type: 'state',
+						common: {
+							name: 'Amount of tanked fuel for this tank (for consumption calculation)',
+							desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
+							type: 'number',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+					await this.setObjectNotExistsAsync(`${vehicles[i].id}.tanks.${j}.quantitysumunit`, {
+						type: 'state',
+						common: {
+							name: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
+							desc: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
+							type: 'string',
+							role: 'state',
+							read: true,
+							write: false,
+						},
+						native: {},
+					});
+				}
 				// /vehicle/{vehicleId}/fuelings.json
 				// create channel "fuelings"
 				await this.setObjectNotExistsAsync(`${vehicles[i].id}.fuelings`, {
@@ -666,28 +682,28 @@ class Spritmonitor extends utils.Adapter {
 					common: {
 						name: 'A JSON array of fuelings',
 						desc: 'A JSON array of fuelings',
-						type: 'string',
+						type: 'array',
 						role: 'state',
 						read: true,
 						write: false,
 					},
 					native: {},
 				});
-				// /vehicle/{vehicleId}/costnotes.json
-				// create channel "costnotes"
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.costnotes`, {
+				// /vehicle/{vehicleId}/costsnotes.json
+				// create channel "costsnotes"
+				await this.setObjectNotExistsAsync(`${vehicles[i].id}.costsnotes`, {
 					type: 'channel',
 					common: {
 						name: 'List of expenses and notes for given vehicle',
 					},
 					native: {},
 				});
-				await this.setObjectNotExistsAsync(`${vehicles[i].id}.costnotes.raw`, {
+				await this.setObjectNotExistsAsync(`${vehicles[i].id}.costsnotes.raw`, {
 					type: 'state',
 					common: {
 						name: 'A JSON array of costs / notes',
 						desc: 'A JSON array of costs / notes',
-						type: 'string',
+						type: 'array',
 						role: 'state',
 						read: true,
 						write: false,
@@ -709,7 +725,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'A JSON array of reminders',
 					desc: 'A JSON array of reminders',
-					type: 'string',
+					type: 'array',
 					role: 'state',
 					read: true,
 					write: false,
@@ -737,14 +753,386 @@ class Spritmonitor extends utils.Adapter {
 				},
 				native: {},
 			});
-
+			// create channel "ADD"
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD`, {
+				type: 'channel',
+				common: {
+					name: 'Add a new nueling for given tank of given vehicle',
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.ADD`, {
+				type: 'state',
+				common: {
+					name: 'Add a new fueling for given tank of given vehicle (single entry)',
+					desc: 'Add a new fueling for given tank of given vehicle (single entry)',
+					type: 'boolean',
+					def: false,
+					role: 'button',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.vehicleId`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of the vehicle to get fuelings for',
+					desc: 'Numeric ID of the vehicle to get fuelings for',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.tankId`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of the tank to get fuelings for',
+					desc: 'Numeric ID of the tank to get fuelings for',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					max: 1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.date`, {
+				type: 'state',
+				common: {
+					name: 'Date of the fueling to be added (format: DD.MM.YYYY)',
+					desc: 'Date of the fueling to be added (format: DD.MM.YYYY)',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.odometer`, {
+				type: 'state',
+				common: {
+					name: 'Odometer of the fueling to be added',
+					desc: 'Odometer of the fueling to be added',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.trip`, {
+				type: 'state',
+				common: {
+					name: 'Trip of the fueling to be added',
+					desc: 'Trip of the fueling to be added',
+					type: 'number',
+					role: 'state',
+					min: 0.1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.quantity`, {
+				type: 'state',
+				common: {
+					name: 'Amount of fuel of the fueling to be added',
+					desc: 'Amount of fuel of the fueling to be added',
+					type: 'number',
+					role: 'state',
+					min: 0.1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.type`, {
+				type: 'state',
+				common: {
+					name: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
+					desc: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.price`, {
+				type: 'state',
+				common: {
+					name: 'Price of the fueling to be added',
+					desc: 'Price of the fueling to be added',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.currencyid`, {
+				type: 'state',
+				common: {
+					name: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
+					desc: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					max: 33,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.pricetype`, {
+				type: 'state',
+				common: {
+					name: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
+					desc: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					max: 1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.fuelsortid`, {
+				type: 'state',
+				common: {
+					name: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
+					desc: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
+					type: 'number',
+					role: 'state',
+					min: 1,
+					max: 7,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.quantityunitid`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
+					desc: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
+					type: 'number',
+					role: 'state',
+					min: 1,
+					max: 5,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.note`, {
+				type: 'state',
+				common: {
+					name: 'Free text note of the user for the fueling to be added',
+					desc: 'Free text note of the user for the fueling to be added',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.stationname`, {
+				type: 'state',
+				common: {
+					name: 'Gas station company for the fueling to be added',
+					desc: 'Gas station company for the fueling to be added',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.location`, {
+				type: 'state',
+				common: {
+					name: 'Free text location name for the fueling to be added',
+					desc: 'Free text location name for the fueling to be added',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.country`, {
+				type: 'state',
+				common: {
+					name: 'Country of the gas station for the fueling to be added',
+					desc: 'Country of the gas station for the fueling to be added',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.bc_consumption`, {
+				type: 'state',
+				common: {
+					name: 'Consumption according to the vehicles borcomputer',
+					desc: 'Consumption according to the vehicles borcomputer',
+					type: 'number',
+					role: 'state',
+					min: 0.1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.bc_quantity`, {
+				type: 'state',
+				common: {
+					name: 'Consumed quantity according to the vehicles borcomputer',
+					desc: 'Consumed quantity according to the vehicles borcomputer',
+					type: 'number',
+					role: 'state',
+					min: 0.1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.bc_speed`, {
+				type: 'state',
+				common: {
+					name: 'Average speed according to the vehicles borcomputer',
+					desc: 'Average speed according to the vehicles borcomputer',
+					type: 'number',
+					role: 'state',
+					min: 0.1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.position_lat`, {
+				type: 'state',
+				common: {
+					name: 'Latitude of gas station',
+					desc: 'Latitude of gas station',
+					type: 'number',
+					role: 'state',
+					min: -180,
+					max: 180,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.position_lon`, {
+				type: 'state',
+				common: {
+					name: 'Longitude of gas station',
+					desc: 'Longitude of gas station',
+					type: 'number',
+					role: 'state',
+					min: -90,
+					max: 90,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			/*
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.ADD_RAW`, {
+				type: 'state',
+				common: {
+					name: 'Add new fueling for given tank of given vehicle (Object with a string)',
+					desc: 'Add new fueling for given tank of given vehicle (Object with a string)',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			*/
+			// create channel "DEL"
+			await this.setObjectNotExistsAsync(`ACTIONS.DEL`, {
+				type: 'channel',
+				common: {
+					name: 'Delete an existing fueling for given tank of given vehicle',
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.DEL.DEL`, {
+				type: 'state',
+				common: {
+					name: 'Delete an existing fueling for given tank of given vehicle',
+					desc: 'Delete an existing fueling for given tank of given vehicle',
+					type: 'boolean',
+					def: false,
+					role: 'button',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.DEL.vehicleId`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of the vehicle to delete a fueling for',
+					desc: 'Numeric ID of the vehicle to delete a fueling for',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.DEL.tankId`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of the tank to delete fueling for',
+					desc: 'Numeric ID of the tank to delete fueling for',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					max: 1,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.DEL.fuelingId`, {
+				type: 'state',
+				common: {
+					name: 'Numeric ID of the fueling to be deleted',
+					desc: 'Numeric ID of the fueling to be deleted',
+					type: 'number',
+					role: 'state',
+					min: 0,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
 			// subscribeStates
 			this.subscribeStates('ACTIONS.UPDATE');
+			this.subscribeStates('ACTIONS.ADD.ADD');
+			// this.subscribeStates('ACTIONS.ADD.ADD_RAW');
+			this.subscribeStates('ACTIONS.DEL.DEL');
 
 			this.log.debug('[createObjects]: Objects created...');
 
 		} else {
-			throw new Error('No Vehicles found, no Objects created. Check API (ERR_#004).');
+			throw new Error('No Vehicles found, no Objects created. Check API (ERR_#004)');
 		}
 	}
 
@@ -810,24 +1198,25 @@ class Spritmonitor extends utils.Adapter {
 
 	async fillObjectsTanks(vehicles, tanks) {
 		//this.log.debug(`[fillObjectsTanks]: vehicles ${vehicles}; tanks ${JSON.stringify(tanks)}`);
-
-		this.setStateAsync(`${vehicles}.tanks.id`, { val: tanks[0].id, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.fuelsorttype`, { val: tanks[0].fuelsorttype, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.quantityunittype`, { val: tanks[0].quantityunittype, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.name`, { val: tanks[0].name, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.consumption`, { val: Number(tanks[0].consumption), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.consumptionunit`, { val: tanks[0].consumptionunit, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.consumptionunitid`, { val: tanks[0].consumptionunitid, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.co2`, { val: Number(tanks[0].co2), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.co2tripsum`, { val: Number(tanks[0].co2tripsum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.co2quantitysum`, { val: Number(tanks[0].co2quantitysum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.costsum`, { val: Number(tanks[0].costsum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.costsumunit`, { val: tanks[0].costsumunit, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.costtripsum`, { val: Number(tanks[0].costtripsum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.tripsum`, { val: Number(tanks[0].tripsum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.tripsumunit`, { val: tanks[0].tripsumunit, ack: true });
-		this.setStateAsync(`${vehicles}.tanks.quantitysum`, { val: Number(tanks[0].quantitysum), ack: true });
-		this.setStateAsync(`${vehicles}.tanks.quantitysumunit`, { val: tanks[0].quantitysumunit, ack: true });
+		for (let i = 0; i < tanks.length; i++) {
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.id`, { val: tanks[i].id, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.fuelsorttype`, { val: tanks[i].fuelsorttype, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.quantityunittype`, { val: tanks[i].quantityunittype, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.name`, { val: tanks[i].name, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.consumption`, { val: Number(tanks[i].consumption), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.consumptionunit`, { val: tanks[i].consumptionunit, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.consumptionunitid`, { val: tanks[i].consumptionunitid, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.co2`, { val: Number(tanks[i].co2), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.co2tripsum`, { val: Number(tanks[i].co2tripsum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.co2quantitysum`, { val: Number(tanks[i].co2quantitysum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.costsum`, { val: Number(tanks[i].costsum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.costsumunit`, { val: tanks[i].costsumunit, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.costtripsum`, { val: Number(tanks[i].costtripsum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.tripsum`, { val: Number(tanks[i].tripsum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.tripsumunit`, { val: tanks[i].tripsumunit, ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.quantitysum`, { val: Number(tanks[i].quantitysum), ack: true });
+			this.setStateAsync(`${vehicles}.tanks.${i + 1}.quantitysumunit`, { val: tanks[i].quantitysumunit, ack: true });
+		}
 	}
 
 	async getFuelings(vehicleId) {
@@ -841,30 +1230,68 @@ class Spritmonitor extends utils.Adapter {
 			},
 		})
 			.then(async (response) => {
-				this.log.debug(`[getTanks]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+				this.log.debug(`[getFuelings]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.fillObjectsFuelings(vehicleId, response.data);
 			})
 			.catch((error) => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
-					this.log.debug(`[getTanks]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					this.log.debug(`[getFuelings]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
 				} else if (error.request) {
 					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
-					this.log.debug(`[getTanks]: error request: ${error}`);
+					this.log.debug(`[getFuelings]: error request: ${error}`);
 				} else {
 					// Something happened in setting up the request that triggered an Error
-					this.log.debug(`[getTanks]: error message: ${error.message}`);
+					this.log.debug(`[getFuelings]: error message: ${error.message}`);
 				}
-				this.log.debug(`[getTanks]: error.config: ${JSON.stringify(error.config)}`);
+				this.log.debug(`[getFuelings]: error.config: ${JSON.stringify(error.config)}`);
 			});
 	}
 
 	async fillObjectsFuelings(vehicles, fuelings) {
 		this.setStateAsync(`${vehicles}.fuelings.raw`, { val: JSON.stringify(fuelings), ack: true });
+
+		const years = [...new Set(fuelings.map(item => item.date.substr(item.date.length - 4)))];
+		// this.log.debug(`[fillObjectsFuelings]: years: ${years}`);
+
+		let tempYear;
+		for (let i = 0; i < years.length; i++) {
+
+			// create channel "years"
+			await this.setObjectNotExistsAsync(`${vehicles}.fuelings.${years[i]}`, {
+				type: 'channel',
+				common: {
+					name: `Fuelings ${years[i]}`
+				},
+				native: {},
+			});
+
+			tempYear = [];
+			for (let j = 0; j < Object.keys(fuelings).length; j++) {
+				if (fuelings[j].date.substr(fuelings[j].date.length - 4) == years[i]) {
+					tempYear.push(fuelings[j]);
+				}
+			}
+			// this.log.debug(`[fillObjectsFuelings]: tempYear: ${JSON.stringify(tempYear)}`);
+
+			await this.setObjectNotExistsAsync(`${vehicles}.fuelings.${years[i]}.raw`, {
+				type: 'state',
+				common: {
+					name: `A JSON array of fuelings (${years[i]})`,
+					desc: `A JSON array of fuelings (${years[i]})`,
+					type: 'array',
+					role: 'state',
+					read: true,
+					write: false,
+				},
+				native: {},
+			});
+			this.setStateAsync(`${vehicles}.fuelings.${years[i]}.raw`, { val: JSON.stringify(tempYear), ack: true });
+		}
 	}
 
-	async getCostnotes(vehicleId) {
+	async getCostsnotes(vehicleId) {
 		await this.requestClient({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/costsnotes.json?limit=10000`,
@@ -875,27 +1302,65 @@ class Spritmonitor extends utils.Adapter {
 			},
 		})
 			.then(async (response) => {
-				this.log.debug(`[getTanks]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+				this.log.debug(`[getCostnotes]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
-				await this.fillObjectsCostnotes(vehicleId, response.data);
+				await this.fillObjectsCostsnotes(vehicleId, response.data);
 			})
 			.catch((error) => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
-					this.log.debug(`[getTanks]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					this.log.debug(`[getCostnotes]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
 				} else if (error.request) {
 					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
-					this.log.debug(`[getTanks]: error request: ${error}`);
+					this.log.debug(`[getCostnotes]: error request: ${error}`);
 				} else {
 					// Something happened in setting up the request that triggered an Error
-					this.log.debug(`[getTanks]: error message: ${error.message}`);
+					this.log.debug(`[getCostnotes]: error message: ${error.message}`);
 				}
-				this.log.debug(`[getTanks]: error.config: ${JSON.stringify(error.config)}`);
+				this.log.debug(`[getCostnotes]: error.config: ${JSON.stringify(error.config)}`);
 			});
 	}
 
-	async fillObjectsCostnotes(vehicles, costnotes) {
-		this.setStateAsync(`${vehicles}.costnotes.raw`, { val: JSON.stringify(costnotes), ack: true });
+	async fillObjectsCostsnotes(vehicles, costsnotes) {
+		this.setStateAsync(`${vehicles}.costsnotes.raw`, { val: JSON.stringify(costsnotes), ack: true });
+
+		const years = [...new Set(costsnotes.map(item => item.date.substr(item.date.length - 4)))];
+		// this.log.debug(`[fillObjectsCostsnotes]: years: ${years}`);
+
+		let tempYear;
+		for (let i = 0; i < years.length; i++) {
+
+			// create channel "years"
+			await this.setObjectNotExistsAsync(`${vehicles}.costsnotes.${years[i]}`, {
+				type: 'channel',
+				common: {
+					name: `Costs / Notes ${years[i]}`
+				},
+				native: {},
+			});
+
+			tempYear = [];
+			for (let j = 0; j < Object.keys(costsnotes).length; j++) {
+				if (costsnotes[j].date.substr(costsnotes[j].date.length - 4) == years[i]) {
+					tempYear.push(costsnotes[j]);
+				}
+			}
+			// this.log.debug(`[fillObjectsCostsnotes]: tempYear: ${JSON.stringify(tempYear)}`);
+
+			await this.setObjectNotExistsAsync(`${vehicles}.costsnotes.${years[i]}.raw`, {
+				type: 'state',
+				common: {
+					name: `A JSON array of costs / notes (${years[i]})`,
+					desc: `A JSON array of costs / notes (${years[i]})`,
+					type: 'array',
+					role: 'state',
+					read: true,
+					write: false,
+				},
+				native: {},
+			});
+			this.setStateAsync(`${vehicles}.costsnotes.${years[i]}.raw`, { val: JSON.stringify(tempYear), ack: true });
+		}
 	}
 
 	async getReminders() {
@@ -909,27 +1374,120 @@ class Spritmonitor extends utils.Adapter {
 			},
 		})
 			.then(async (response) => {
-				this.log.debug(`[getTanks]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+				this.log.debug(`[getReminders]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.fillObjectsReminders(response.data);
 			})
 			.catch((error) => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
-					this.log.debug(`[getTanks]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					this.log.debug(`[getReminders]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
 				} else if (error.request) {
 					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
-					this.log.debug(`[getTanks]: error request: ${error}`);
+					this.log.debug(`[getReminders]: error request: ${error}`);
 				} else {
 					// Something happened in setting up the request that triggered an Error
-					this.log.debug(`[getTanks]: error message: ${error.message}`);
+					this.log.debug(`[getReminders]: error message: ${error.message}`);
 				}
-				this.log.debug(`[getTanks]: error.config: ${JSON.stringify(error.config)}`);
+				this.log.debug(`[getReminders]: error.config: ${JSON.stringify(error.config)}`);
 			});
 	}
 
 	async fillObjectsReminders(reminders) {
 		this.setStateAsync(`reminders.raw`, { val: JSON.stringify(reminders), ack: true });
+	}
+
+	// https://api.spritmonitor.de/v1/vehicle/763356/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
+
+	async addFueling(vehicleId, tankId, val) {
+		await this.requestClient({
+			method: 'GET',
+			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling.json?${val}`,
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[addFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+				if (response.data.errors) {
+					this.log.info(`[addFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING SET.`);
+				}
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[addFueling]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[addFueling]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[addFueling]: error message: ${error.message}`);
+				}
+				this.log.debug(`[addFueling]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async delFueling(vehicleId, tankId, fuelingId) {
+		await this.requestClient({
+			method: 'GET',
+			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling/${fuelingId}.delete`,
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[delFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+				if (response.data.errors) {
+					this.log.info(`[delFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING DELETED.`);
+				}
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[delFueling]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[delFueling]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[delFueling]: error message: ${error.message}`);
+				}
+				this.log.debug(`[delFueling]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	dateIsValid(dateStr) {
+		if (dateStr.match(/^\d{2}\.\d{2}\.\d{4}$/) === null) {
+			return false;
+		}
+		const [day, month, year] = dateStr.split('.');
+		const isoFormattedStr = `${year}-${month}-${day}`;
+		const date = new Date(isoFormattedStr);
+		const timestamp = date.getTime();
+		if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
+			return false;
+		}
+		return date.toISOString().startsWith(isoFormattedStr);
+	}
+
+	numberInRange(min, max, val) {
+		/*
+		if (typeof val !== 'number' || Number.isNaN(val)) {
+			return false;
+		}
+		*/
+		if (min === null) {
+			return val <= max;
+		} else if (max === null) {
+			return min <= val;
+		} else {
+			return min <= val && val <= max;
+		}
 	}
 
 	/**
@@ -957,7 +1515,14 @@ class Spritmonitor extends utils.Adapter {
 			if (state.ack === false) {
 				this.log.debug(`[onStateChange]: id: ${id}; state: ${JSON.stringify(state)}`);
 
-				const command = id.split('.')[3];
+				let command = null;
+				const idSplit = id.split('.');
+
+				if (idSplit.length === 4) {
+					command = idSplit[3];
+				} else if (idSplit.length === 5) {
+					command = idSplit[4];
+				}
 				this.log.debug(`[onStateChange]: command: ${command}`);
 
 				if (command === 'UPDATE' && state.val) {
@@ -967,9 +1532,232 @@ class Spritmonitor extends utils.Adapter {
 					for (let i = 0; i < vehicleIDs.length; i++) {
 						await this.getTanks(vehicleIDs[i]);
 						await this.getFuelings(vehicleIDs[i]);
-						await this.getCostnotes(vehicleIDs[i]);
-						await this.getReminders();
+						await this.getCostsnotes(vehicleIDs[i]);
 					}
+					await this.getReminders();
+				}
+				if (command === 'ADD' && state.val) {
+
+					let APIstring = '';
+
+					const vehicleId = await this.getStateAsync(`ACTIONS.ADD.vehicleId`);
+					if (vehicleId && vehicleId.val) {
+						if (!vehicleIDs.includes(vehicleId.val)) {
+							this.log.info(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
+							return;
+						}
+					} else {
+						this.log.info(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
+						return;
+					}
+					const tankId = await this.getStateAsync(`ACTIONS.ADD.tankId`);
+					if (tankId && tankId.val !== null) {
+						if (!this.numberInRange(0, null, tankId.val)) {
+							this.log.info(`[onStateChange]: tankId not valid. NOTHING SET.`);
+							return;
+						}
+					} else {
+						this.log.info(`[onStateChange]: tankId not valid. NOTHING SET.`);
+						return;
+					}
+					const date = await this.getStateAsync(`ACTIONS.ADD.date`);
+					if (date && this.dateIsValid(date.val)) {
+						APIstring += `date=${date.val}`;
+					} else {
+						this.log.info(`[onStateChange]: date not valid. NOTHING SET.`);
+						return;
+					}
+					const odometer = await this.getStateAsync(`ACTIONS.ADD.odometer`);
+					if (odometer && odometer.val !== 0) {
+						if (this.numberInRange(0.1, null, odometer.val)) {
+							APIstring += `&odometer=${odometer.val}`;
+						} else {
+							this.log.info(`[onStateChange]: value odometer not valid. Value not added.`);
+						}
+					}
+					const trip = await this.getStateAsync(`ACTIONS.ADD.trip`);
+					if (trip && this.numberInRange(0.1, null, trip.val)) {
+						APIstring += `&trip=${trip.val}`;
+					} else {
+						this.log.info(`[onStateChange]: value trip not valid. NOTHING SET.`);
+						return;
+					}
+					const quantity = await this.getStateAsync(`ACTIONS.ADD.quantity`);
+					if (quantity && this.numberInRange(0.1, null, quantity.val)) {
+						APIstring += `&quantity=${quantity.val}`;
+					} else {
+						this.log.info(`[onStateChange]: value quantity not valid. NOTHING SET.`);
+						return;
+					}
+					const type = await this.getStateAsync(`ACTIONS.ADD.type`);
+					if (type && (type.val === 'invalid' || type.val === 'full' || type.val === 'notfull' || type.val === 'first')) {
+						APIstring += `&type=${type.val}`;
+					} else {
+						this.log.info(`[onStateChange]: type not valid. NOTHING SET.`);
+						return;
+					}
+					const price = await this.getStateAsync(`ACTIONS.ADD.price`);
+					if (price && price.val !== 0) {
+						if (this.numberInRange(0.1, null, price.val)) {
+							APIstring += `&price=${price.val}`;
+						} else {
+							this.log.info(`[onStateChange]: price not valid. Value not added.`);
+						}
+					}
+					const currencyid = await this.getStateAsync(`ACTIONS.ADD.currencyid`);
+					if (currencyid && this.numberInRange(0, 33, currencyid.val)) {
+						APIstring += `&currencyid=${currencyid.val}`;
+					}
+					const pricetype = await this.getStateAsync(`ACTIONS.ADD.pricetype`);
+					if (pricetype && this.numberInRange(0, 1, pricetype.val)) {
+						APIstring += `&pricetype=${pricetype.val}`;
+					}
+					const fuelsortid = await this.getStateAsync(`ACTIONS.ADD.fuelsortid`);
+					if (fuelsortid && this.numberInRange(0, 33, fuelsortid.val)) {
+						APIstring += `&fuelsortid=${fuelsortid.val}`;
+					} else {
+						this.log.info(`[onStateChange]: fuelsortid not valid. NOTHING SET.`);
+						return;
+					}
+					const quantityunitid = await this.getStateAsync(`ACTIONS.ADD.quantityunitid`);
+					if (quantityunitid && this.numberInRange(1, 5, quantityunitid.val)) {
+						APIstring += `&quantityunitid=${quantityunitid.val}`;
+					} else {
+						this.log.info(`[onStateChange]: quantityunitid not valid. NOTHING SET.`);
+						return;
+					}
+					const note = await this.getStateAsync(`ACTIONS.ADD.note`);
+					if (note && note.val) {
+						APIstring += `&note=${note.val}`;
+					}
+					const stationname = await this.getStateAsync(`ACTIONS.ADD.stationname`);
+					if (stationname && stationname.val) {
+						APIstring += `&stationname=${stationname.val}`;
+					}
+					const location = await this.getStateAsync(`ACTIONS.ADD.location`);
+					if (location && location.val) {
+						APIstring += `&location=${location.val}`;
+					}
+					const country = await this.getStateAsync(`ACTIONS.ADD.country`);
+					if (country && country.val) {
+						APIstring += `&country=${country.val}`;
+					}
+					const bc_consumption = await this.getStateAsync(`ACTIONS.ADD.bc_consumption`);
+					if (bc_consumption && bc_consumption.val !== 0) {
+						if (this.numberInRange(0.1, null, bc_consumption.val)) {
+							APIstring += `&bc_consumption=${bc_consumption.val}`;
+						} else {
+							this.log.info(`[onStateChange]: bc_consumption not valid. Value not added.`);
+						}
+					}
+					const bc_quantity = await this.getStateAsync(`ACTIONS.ADD.bc_quantity`);
+					if (bc_quantity && bc_quantity.val !== 0) {
+						if (this.numberInRange(0.1, null, bc_quantity.val)) {
+							APIstring += `&bc_quantity=${bc_quantity.val}`;
+						} else {
+							this.log.info(`[onStateChange]: bc_quantity not valid. Value not added.`);
+						}
+					}
+					const bc_speed = await this.getStateAsync(`ACTIONS.ADD.bc_speed`);
+					if (bc_speed && bc_speed.val !== 0) {
+						if (this.numberInRange(0.1, null, bc_speed.val)) {
+							APIstring += `&bc_speed=${bc_speed.val}`;
+						} else {
+							this.log.info(`[onStateChange]: bc_speed not valid. Value not added.`);
+						}
+					}
+					const position_lat = await this.getStateAsync(`ACTIONS.ADD.position_lat`);
+					const position_long = await this.getStateAsync(`ACTIONS.ADD.position_long`);
+					if (position_lat && position_lat.val !== 0 && position_long && position_long.val !== 0) {
+						if (this.numberInRange(-180, 180, position_lat.val) && this.numberInRange(-90, 90, position_long.val)) {
+							APIstring += `&position=${position_lat.val},${position_long.val}`;
+						} else {
+							this.log.info(`[onStateChange]: Position not valid. Value not added.`);
+						}
+					}
+
+					this.log.debug(`[onStateChange]: APIstring ${APIstring}`);
+
+					await this.addFueling(vehicleId.val, tankId.val, APIstring);
+
+					// reset all userinputs
+					this.setState(`ACTIONS.ADD.vehicleId`, null);
+					this.setState(`ACTIONS.ADD.tankId`, null);
+					this.setState(`ACTIONS.ADD.date`, null);
+					this.setState(`ACTIONS.ADD.odometer`, null);
+					this.setState(`ACTIONS.ADD.trip`, null);
+					this.setState(`ACTIONS.ADD.quantity`, null);
+					this.setState(`ACTIONS.ADD.type`, null);
+					this.setState(`ACTIONS.ADD.price`, null);
+					this.setState(`ACTIONS.ADD.currencyid`, null);
+					this.setState(`ACTIONS.ADD.pricetype`, null);
+					this.setState(`ACTIONS.ADD.fuelsortid`, null);
+					this.setState(`ACTIONS.ADD.quantityunitid`, null);
+					this.setState(`ACTIONS.ADD.note`, null);
+					this.setState(`ACTIONS.ADD.stationname`, null);
+					this.setState(`ACTIONS.ADD.location`, null);
+					this.setState(`ACTIONS.ADD.country`, null);
+					this.setState(`ACTIONS.ADD.bc_consumption`, null);
+					this.setState(`ACTIONS.ADD.bc_quantity`, null);
+					this.setState(`ACTIONS.ADD.bc_speed`, null);
+					this.setState(`ACTIONS.ADD.position_lat`, null);
+					this.setState(`ACTIONS.ADD.position_long`, null);
+
+					await this.getFuelings(vehicleId.val);
+				}
+
+				/*
+				if (command === 'ADD_RAW' && state.val) {
+
+					let APIstring = '';
+
+					// TODO
+
+					// reset userinput
+					this.setState(`ACTIONS.ADD.ADD_RAW`, null);
+				}
+				*/
+
+				if (command === 'DEL' && state.val) {
+					const vehicleId = await this.getStateAsync(`ACTIONS.DEL.vehicleId`);
+					if (vehicleId && vehicleId.val) {
+						if (!vehicleIDs.includes(vehicleId.val)) {
+							this.log.info(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
+							return;
+						}
+					} else {
+						this.log.info(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
+						return;
+					}
+					const tankId = await this.getStateAsync(`ACTIONS.DEL.tankId`);
+					if (tankId && tankId.val !== null) {
+						if (!this.numberInRange(0, null, tankId.val)) {
+							this.log.info(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
+							return;
+						}
+					} else {
+						this.log.info(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
+						return;
+					}
+					const fuelingId = await this.getStateAsync(`ACTIONS.DEL.fuelingId`);
+					if (fuelingId && fuelingId.val !== null) {
+						if (!this.numberInRange(0, null, fuelingId.val)) {
+							this.log.info(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
+							return;
+						}
+					} else {
+						this.log.info(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
+						return;
+					}
+
+					await this.delFueling(vehicleId.val, tankId.val, fuelingId.val);
+
+					// reset all userinputs
+					this.setState(`ACTIONS.DEL.vehicleId`, null);
+					this.setState(`ACTIONS.DEL.tankId`, null);
+					this.setState(`ACTIONS.DEL.fuelingId`, null);
+
+					await this.getFuelings(vehicleId.val);
 				}
 
 			} else {
