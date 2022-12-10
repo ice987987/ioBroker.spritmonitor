@@ -7,7 +7,7 @@
 			"type": "password",
 			"label": "applicationKey",
 			"help": "applicationKeyHint",
-			"validator": "/[a-zA-Z0-9]{50,}/.test(data.applicationKey)",
+			"validator": "/[a-zA-Z0-9]{50}/.test(data.applicationKey)",
 			"validatorNoSaveOnError": true,
 			"visible": true,
 			"repeat": false,

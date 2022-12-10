@@ -1,6 +1,6 @@
 {
   "name": "iobroker.spritmonitor",
-  "version": "0.0.1",
+  "version": "0.0.2-beta.1",
   "description": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
   "author": {
     "name": "ice987987",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
-    "axios": "1.1.3"
+    "axios": "^1.2.1"
   },
   "devDependencies": {
     "@iobroker/adapter-dev": "^1.2.0",
@@ -31,22 +31,22 @@
     "@tsconfig/node14": "^1.0.3",
     "@types/chai": "^4.3.4",
     "@types/chai-as-promised": "^7.1.5",
-    "@types/mocha": "^10.0.0",
-    "@types/node": "^18.11.9",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.12",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^10.0.13",
     "@types/sinon-chai": "^3.2.9",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.28.0",
+    "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.1.0",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.1",
     "proxyquire": "^2.1.3",
-    "sinon": "^14.0.2",
+    "sinon": "^15.0.0",
     "sinon-chai": "^3.7.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   },
   "main": "main.js",
   "files": [

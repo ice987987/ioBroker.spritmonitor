@@ -33,6 +33,34 @@ All product and company names or logos are trademarks™ or registered® tradema
 ## Controls
 
 -   `.ACTIONS.UPDATE`: Update values
+-   `.ACTIONS.ADD.ADD`: Add a new fueling
+-   `.ACTIONS.ADD.vehicleId`[^1]: Numeric ID of the vehicle to get fuelings for
+-   `.ACTIONS.ADD.tankId`[^1]: Numeric ID of the tank to get fuelings for
+-   `.ACTIONS.ADD.date`[^1]: Date of the fueling to be added
+-   `.ACTIONS.ADD.odometer`: Odometer of the fueling to be added
+-   `.ACTIONS.ADD.trip`[^1]: Trip of the fueling to be added
+-   `.ACTIONS.ADD.quantity`[^1]: Amount of fuel of the fueling to be added
+-   `.ACTIONS.ADD.type`[^1]: Type of fueling to be added (allowed values: `invalid`, `full`, `notfull`, `first`)
+-   `.ACTIONS.ADD.price`: Price of the fueling to be added
+-   `.ACTIONS.ADD.currencyid`: Numerical ID of the currency of the fueling to be added (allowed values: `0`: EUR, `1`: CHF, `2`: USD, `3`: CAD, `4`: GBP, `5`: DKK, `6`: NOK, `7`: SEK, `8`: PLN, `9`: SKK, `10`: CZK, `11`: HUF, `12`: SIT, `13`: DEM, `14`: BRL, `15`: HRK, `16`: BGN, `17`: ARS, `18`: CLP, `19`: AUD, `20`: LTL, `21`: LVL, `22`: RON, `23`: RUB, `24`: EEK, `25`: ILS, `26`: BYR, `27`: TRY, `28`: SGD, `29`: MYR, `30`: ISK, `31`: YEN, `32`: CNY, `33`: RSD)
+-   `.ACTIONS.ADD.pricetype`: Numeric ID of price (allowed values: `0`: total price, `1`: unit / liter price)
+-   `.ACTIONS.ADD.fuelsortid`[^1]: Numeric ID of the fuelsort of the fueling to be added (allowed values: `1`: Diesel, `2`: Gasoline, `3`: LPG, `4`: CNG, `5`: Electricity, `6`: AdBlue, `7`: Hydrogen)
+-   `.ACTIONS.ADD.quantityunitid`[^1]: Numeric ID of quantity unit (allowed values: `1`: Liter, `2`: Kilogram, `3`: Gallon (US), `4`: Gallon (Imp), `5`: Kilowatt hour)
+-   `.ACTIONS.ADD.note`: Free text note of the user for the fueling to be added
+-   `.ACTIONS.ADD.stationname`: Gas station company for the fueling to be added
+-   `.ACTIONS.ADD.location`: Free text location name for the fueling to be added
+-   `.ACTIONS.ADD.country`: Country of the gas station for the fueling to be added
+-   `.ACTIONS.ADD.bc_consumption`: Consumption according to the vehicle's bordcomputer
+-   `.ACTIONS.ADD.bc_quantity`: Consumed quantity according to the vehicle's bordcomputer
+-   `.ACTIONS.ADD.bc_speed`: Average speed according to the vehicle's bordcomputer
+-   `.ACTIONS.ADD.position_lat`: Latitude of gas station
+-   `.ACTIONS.ADD.position_long`: Longitude of gas station
+-   `.ACTIONS.DEL.DEL`: Delete a fueling
+-   `.ACTIONS.DEL.vehicleId`[^1]: Numeric ID of the vehicle to delete a fueling for
+-   `.ACTIONS.DEL.tankId`[^1]: Numeric ID of the tank to delete a fueling for
+-   `.ACTIONS.DEL.fuelingId`[^1]: Numeric ID of the fueling to be deleted
+
+[^1]: required values
 
 ## Available values (readonly)
 
@@ -50,30 +78,39 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.[vehicleID].picture_ts`: picture_ts
 -   `.[vehicleID].bcconsumptionunit`: Bordcomputer consumption unit
 -   `.[vehicleID].country`: Country
--   `.[vehicleID].tank.id`: Tank ID
--   `.[vehicleID].tank.fuelsorttype`: Type of tank
--   `.[vehicleID].tank.quantityunittype`: Quantity type of tank
--   `.[vehicleID].tank.name`: Name of fueltype in tank
--   `.[vehicleID].tank.consumption`: Consumption value of this fuel type
--   `.[vehicleID].tank.consumptionunit`: Name of consumption unit
--   `.[vehicleID].tank.consumptionunitid`: Numerical ID of consumption format
--   `.[vehicleID].tank.co2`: Emission of CO₂ for this vehicle in g/km
--   `.[vehicleID].tank.co2tripsum`: Amount of driven distance for which CO₂ was calculated
--   `.[vehicleID].tank.co2quantitysum`: Amount of emissioned CO₂ in kg
--   `.[vehicleID].tank.costsum`: Amount of money spent for fuel for this tank
--   `.[vehicleID].tank.costsumunit`: Currency of the fuel expenses
--   `.[vehicleID].tank.costtripsum`: Amount of driven distance for which the fuel expenses have been summed
--   `.[vehicleID].tank.tripsum`: Amount of driven distance for this tank (for consumption calculation)
--   `.[vehicleID].tank.tripsumunit`: Unit for driven distance (km, mi)
--   `.[vehicleID].tank.quantitysum`: Amount of tanked fuel for this tank (for consumption calculation)
--   `.[vehicleID].tank.quantitysumunit`: Unit for tanked fuel (l, GAL, kg, kWh, ...)
+-   `.[vehicleID].tanks.[tankID].id`: Tank ID
+-   `.[vehicleID].tanks.[tankID].fuelsorttype`: Type of tank
+-   `.[vehicleID].tanks.[tankID].quantityunittype`: Quantity type of tank
+-   `.[vehicleID].tanks.[tankID].name`: Name of fueltype in tank
+-   `.[vehicleID].tanks.[tankID].consumption`: Consumption value of this fuel type
+-   `.[vehicleID].tanks.[tankID].consumptionunit`: Name of consumption unit
+-   `.[vehicleID].tanks.[tankID].consumptionunitid`: Numerical ID of consumption format
+-   `.[vehicleID].tanks.[tankID].co2`: Emission of CO₂ for this vehicle in g/km
+-   `.[vehicleID].tanks.[tankID].co2tripsum`: Amount of driven distance for which CO₂ was calculated
+-   `.[vehicleID].tanks.[tankID].co2quantitysum`: Amount of emissioned CO₂ in kg
+-   `.[vehicleID].tanks.[tankID].costsum`: Amount of money spent for fuel for this tank
+-   `.[vehicleID].tanks.[tankID].costsumunit`: Currency of the fuel expenses
+-   `.[vehicleID].tanks.[tankID].costtripsum`: Amount of driven distance for which the fuel expenses have been summed
+-   `.[vehicleID].tanks.[tankID].tripsum`: Amount of driven distance for this tank (for consumption calculation)
+-   `.[vehicleID].tanks.[tankID].tripsumunit`: Unit for driven distance (km, mi)
+-   `.[vehicleID].tanks.[tankID].quantitysum`: Amount of tanked fuel for this tank (for consumption calculation)
+-   `.[vehicleID].tanks.[tankID].quantitysumunit`: Unit for tanked fuel (l, GAL, kg, kWh, ...)
 -   `.[vehicleID].fuelings.raw`: A JSON array of fuelings
--   `.[vehicleID].costnotes.raw`: A JSON array of costs / notes
+-   `.[vehicleID].fuelings.[year].raw`: A JSON array of fuelings per year
+-   `.[vehicleID].costsnotes.raw`: A JSON array of costs / notes
+-   `.[vehicleID].costsnotes.[year].raw`: A JSON array of costs / notes per year
 -   `.reminders.raw`: A JSON array of reminders
 
 ## Changelog
 
 <!-- ### **WORK IN PROGRESS** -->
+
+### 0.0.2-beta.1
+
+-   (ice987987) add possibility to add and delete values
+-   (ice987987) add all tanks
+-   (ice987987) add `costsnotes.[year].raw` and `fuelings.[year].raw`
+-   (ice987987) update dependencies
 
 ### 0.0.1 (26.11.2022)
 
