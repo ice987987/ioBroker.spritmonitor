@@ -105,12 +105,12 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.1
+### 0.0.2-beta.2
 
--   (ice987987) add possibility to add and delete values
--   (ice987987) add all tanks
--   (ice987987) add `costsnotes.[year].raw` and `fuelings.[year].raw`
--   (ice987987) update dependencies
+-   (ice987987) possibility to add and delete values added
+-   (ice987987) all tanks added
+-   (ice987987) `costsnotes.[year].raw` and `fuelings.[year].raw` added
+-   (ice987987) dependencies updated
 
 ### 0.0.1 (26.11.2022)
 
@@ -120,7 +120,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 MIT License
 
-Copyright (c) 2022 ice987987 <mathias.frei1@gmail.com>
+Copyright (c) 2023 ice987987 <mathias.frei1@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

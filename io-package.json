@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "spritmonitor",
-        "version": "0.0.2-beta.1",
+        "version": "0.0.2-beta.2",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -16,18 +16,18 @@
                 "zh-cn": "首次出版",
                 "uk": "початковий випуск"
             },
-            "0.0.2-beta.1": {
-                "en": "add possibility to add and delete values, add all tanks, add costsnotes.[year].raw and fuelings.[year].raw, update dependencies",
-                "de": "Möglichkeit zum Hinzufügen und Löschen von Werten hinzufügen, alle Tanks hinzufügen, Kostennotizen.[Jahr].Roh und Betankungen hinzufügen.[Jahr].Roh, Abhängigkeiten aktualisieren",
-                "ru": "добавить возможность добавлять и удалять значения, добавлять все баки, добавлять costnotes.[year].raw и Fuelings.[year].raw, обновлять зависимости",
-                "pt": "adicionar possibilidade de adicionar e excluir valores, adicionar todos os tanques, adicionar notas de custos.[ano].matéria-prima e abastecimentos.[ano].matéria-prima, atualizar dependências",
-                "nl": "mogelijkheid toegevoegd om waarden toe te voegen en te verwijderen, alle tanks toe te voegen, kostennotities toe te voegen.[jaar].raw en tankbeurten.[jaar].raw, afhankelijkheden bijwerken",
-                "fr": "ajouter la possibilité d'ajouter et de supprimer des valeurs, d'ajouter tous les réservoirs, d'ajouter des notes de coûts.[année].raw et carburants.[année].raw, mise à jour des dépendances",
-                "it": "aggiungi possibilità di aggiungere ed eliminare valori, aggiungere tutti i serbatoi, aggiungere note di costo.[anno].raw e rifornimenti.[anno].raw, aggiornare le dipendenze",
-                "es": "agregue la posibilidad de agregar y eliminar valores, agregar todos los tanques, agregar notas de costos.[año].sin procesar y combustibles.[año].sin procesar, actualizar dependencias",
-                "pl": "dodaj możliwość dodawania i usuwania wartości, dodaj wszystkie zbiorniki, dodaj notatki o kosztach.[rok].raw i tankowania.[rok].raw, aktualizacja zależności",
-                "uk": "додайте можливість додавати та видаляти значення, додавати всі танки, додавати примітки про витрати.[рік].raw і заправки.[рік].raw, оновлювати залежності",
-                "zh-cn": "添加添加和删除值的可能性，添加所有坦克，添加 costnotes.[year].raw 和 fuelings.[year].raw，更新依赖项"
+            "0.0.2-beta.2": {
+                "en": "possibility to add and delete values added, all tanks added, costsnotes.[year].raw and fuelings.[year].raw added, dependencies updated",
+                "de": "Möglichkeit zum Hinzufügen und Löschen von Werten hinzugefügt, alle Tanks hinzugefügt, costsnotes.[year].raw und fuelings.[year].raw hinzugefügt, Abhängigkeiten aktualisiert",
+                "ru": "добавлена ​​возможность добавлять и удалять значения, добавлены все баки, добавлены costsnotes.[year].raw и fuelings.[year].raw, обновлены зависимости",
+                "pt": "possibilidade de adicionar e excluir valores adicionados, todos os tanques adicionados, notas de costsnotes.[year].raw e fuelings.[year].raw adicionada, dependências atualizadas",
+                "nl": "mogelijkheid om toegevoegde waarden toe te voegen en te verwijderen, alle tanks toegevoegd, costsnotes.[year].raw en fuelings.[year].raw toegevoegd, afhankelijkheden bijgewerkt",
+                "fr": "possibilité d'ajouter et de supprimer des valeurs ajoutées, tous les réservoirs ajoutés, costsnotes.[year].raw et fuelings.[year].raw ajoutés, dépendances mises à jour",
+                "it": "possibilità di aggiungere e cancellare valori aggiunti, aggiunti tutti i serbatoi, costsnotes.[year].raw e fuelings.[year].raw aggiunti, dipendenze aggiornate",
+                "es": "posibilidad de agregar y eliminar valores agregados, todos los tanques agregados, costsnotes.[year].raw y fuelings.[year].raw agregado, dependencias actualizadas",
+                "pl": "możliwość dodawania i usuwania wartości dodanych, wszystkich dodanych zbiorników, notatek costsnotes.[year].raw i fuelings.[year].raw surowiec, zaktualizowano zależności",
+                "uk": "можливість додавати та видаляти додані значення, усі додані танки, примітки про costsnotes.[year].raw і fuelings.[year].raw сирі, оновлено залежності",
+                "zh-cn": "添加和删​​除值的可能性添加，所有坦克添加，costnotes.[year].raw 和 fuelings.[year].raw 添加，依赖更新"
             }
         },
         "titleLang": {
