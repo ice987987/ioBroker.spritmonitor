@@ -74,6 +74,11 @@ class Spritmonitor extends utils.Adapter {
 			}
 			await this.getReminders();
 
+			await this.getFuelsorts();
+			await this.getCurrencies();
+			await this.getQuantityunits();
+			await this.getCompanies();
+
 			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
 			this.requestInterval = setInterval(async () => {
 				await this.getVehicles();
@@ -93,7 +98,6 @@ class Spritmonitor extends utils.Adapter {
 
 	// https://api.spritmonitor.de/doc
 	async getVehicles() {
-
 		await this.requestClient({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/vehicles.json',
@@ -124,6 +128,214 @@ class Spritmonitor extends utils.Adapter {
 					this.log.debug(`[getVehiclesData]: error message: ${error.message}`);
 				}
 				this.log.debug(`[getVehiclesData]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getFuelsorts() {
+		await this.requestClient({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/fuelsorts.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getFuelsorts]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.fuelsorts`, {
+					type: 'state',
+					common: {
+						name: 'List of supported fuelsorts, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.fuelsorts`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getFuelsorts]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getFuelsorts]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getFuelsorts]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getFuelsorts]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getCurrencies() {
+		await this.requestClient({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/currencies.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getCurrencies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.currencies`, {
+					type: 'state',
+					common: {
+						name: 'List of supported currencies, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.currencies`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getCurrencies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getCurrencies]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getCurrencies]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getCurrencies]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getQuantityunits() {
+		await this.requestClient({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/quantityunits.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getQuantityunits]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.quantityunits`, {
+					type: 'state',
+					common: {
+						name: 'List of supported quantityunits, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.quantityunits`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getQuantityunits]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getQuantityunits]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getQuantityunits]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getQuantityunits]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getCompanies() {
+		await this.requestClient({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/companies.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getCompanies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.companies`, {
+					type: 'state',
+					common: {
+						name: 'List of supported companies, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.companies`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getCompanies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getCompanies]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getCompanies]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getCompanies]: error.config: ${JSON.stringify(error.config)}`);
 			});
 	}
 
@@ -859,6 +1071,7 @@ class Spritmonitor extends utils.Adapter {
 					desc: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
 					type: 'string',
 					role: 'state',
+					states: { invalid: 'invalid', full: 'full', notfull: 'notfull', first: 'first' },
 					read: true,
 					write: true,
 				},
@@ -884,6 +1097,7 @@ class Spritmonitor extends utils.Adapter {
 					desc: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
 					type: 'number',
 					role: 'state',
+					states: { 0: 'EUR', 1: 'CHF', 2: 'USD', 3: 'CAD', 4: 'GBP', 5: 'DKK', 6: 'NOK', 7: 'SEK', 8: 'PLN', 9: 'SKK', 10: 'CZK', 11: 'HUF', 12: 'SIT', 13: 'DEM', 14: 'BRL', 15: 'HRK', 16: 'BGN', 17: 'ARS', 18: 'CLP', 19: 'AUD', 20: 'LTL', 21: 'LVL', 22: 'RON', 23: 'RUB', 24: 'EEK', 25: 'ILS', 26: 'BYR', 27: 'TRY', 28: 'SGD', 29: 'MYR', 30: 'ISK', 31: 'YEN', 32: 'CNY', 33: 'RSD' },
 					min: 0,
 					max: 33,
 					read: true,
@@ -898,6 +1112,7 @@ class Spritmonitor extends utils.Adapter {
 					desc: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
 					type: 'number',
 					role: 'state',
+					states: { 0: 'total price', 1: 'unit / liter price' },
 					min: 0,
 					max: 1,
 					read: true,
@@ -912,6 +1127,7 @@ class Spritmonitor extends utils.Adapter {
 					desc: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
 					type: 'number',
 					role: 'state',
+					states: { 1: 'Diesel', 2: 'Gasoline', 3: 'LPG', 4: 'CNG', 5: 'Electricity', 6: 'AdBlue', 7: 'Hydrogen' },
 					min: 1,
 					max: 7,
 					read: true,
@@ -926,6 +1142,7 @@ class Spritmonitor extends utils.Adapter {
 					desc: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
 					type: 'number',
 					role: 'state',
+					states: { 1: 'Liter', 2: 'Kilogram', 3: 'Gallon (US)', 4: 'Gallon (Imp)', 5: 'Kilowatt hour' },
 					min: 1,
 					max: 5,
 					read: true,
@@ -1043,6 +1260,28 @@ class Spritmonitor extends utils.Adapter {
 					role: 'state',
 					min: -90,
 					max: 90,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.attributes`, {
+				type: 'state',
+				common: {
+					name: 'Combination of one tire type (wintertires, summertires, allyeartires) and one driving style (slow, normal, fast) and one or more extras (ac, heating, trailer)',
+					type: 'string',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.streets`, {
+				type: 'state',
+				common: {
+					name: 'Combination of city, autobahn, land',
+					type: 'string',
+					role: 'state',
 					read: true,
 					write: true,
 				},
@@ -1397,7 +1636,7 @@ class Spritmonitor extends utils.Adapter {
 		this.setStateAsync(`reminders.raw`, { val: JSON.stringify(reminders), ack: true });
 	}
 
-	// https://api.spritmonitor.de/v1/vehicle/763356/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
+	// https://api.spritmonitor.de/v1/vehicle/123456/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
 
 	async addFueling(vehicleId, tankId, val) {
 		await this.requestClient({
@@ -1675,12 +1914,36 @@ class Spritmonitor extends utils.Adapter {
 							this.log.info(`[onStateChange]: Position not valid. Value not added.`);
 						}
 					}
+					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
+					if (attributes && attributes.val) {
+						// remove dublicates
+						let attrMod = [...new Set(attributes.val.split(','))];
+						this.log.debug(`[onStateChange]: attrMod: ${attrMod}`);
+
+						if (attrMod.every(element => { return ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element); })) {
+							APIstring += `&attributes=${attrMod}`;
+						} else {
+							this.log.info(`[onStateChange]: attribut(es) not valid. Value not added.`);
+						}
+					}
+					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
+					if (streets && streets.val) {
+						// remove dublicates
+						let streetsMod = [...new Set(streets.val.split(','))];
+						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
+						if (streetsMod.every(element => { return ['city', 'autobahn', 'land'].includes(element); })) {
+							APIstring += `&streets=${streetsMod}`;
+						} else {
+							this.log.info(`[onStateChange]: streets not valid. Value not added.`);
+						}
+					}
 
 					this.log.debug(`[onStateChange]: APIstring ${APIstring}`);
 
 					await this.addFueling(vehicleId.val, tankId.val, APIstring);
 
 					// reset all userinputs
+					/*
 					this.setState(`ACTIONS.ADD.vehicleId`, null);
 					this.setState(`ACTIONS.ADD.tankId`, null);
 					this.setState(`ACTIONS.ADD.date`, null);
@@ -1702,6 +1965,7 @@ class Spritmonitor extends utils.Adapter {
 					this.setState(`ACTIONS.ADD.bc_speed`, null);
 					this.setState(`ACTIONS.ADD.position_lat`, null);
 					this.setState(`ACTIONS.ADD.position_long`, null);
+					*/
 
 					await this.getFuelings(vehicleId.val);
 				}

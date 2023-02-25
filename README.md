@@ -55,6 +55,8 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.ACTIONS.ADD.bc_speed`: Average speed according to the vehicle's bordcomputer
 -   `.ACTIONS.ADD.position_lat`: Latitude of gas station
 -   `.ACTIONS.ADD.position_long`: Longitude of gas station
+-   `.ACTIONS.ADD.attributes`: Combination of one tire type (`wintertires`, `summertires`, `allyeartires`) and one driving style (`slow`, `normal`, `fast`) and one or more extras (`ac`, `heating`, `trailer`)
+-   `.ACTIONS.ADD.streets`: Combination of `city` and/or `autobahn` and/or `land`
 -   `.ACTIONS.DEL.DEL`: Delete a fueling
 -   `.ACTIONS.DEL.vehicleId`[^1]: Numeric ID of the vehicle to delete a fueling for
 -   `.ACTIONS.DEL.tankId`[^1]: Numeric ID of the tank to delete a fueling for
@@ -100,16 +102,22 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.[vehicleID].costsnotes.raw`: A JSON array of costs / notes
 -   `.[vehicleID].costsnotes.[year].raw`: A JSON array of costs / notes per year
 -   `.reminders.raw`: A JSON array of reminders
+-   `.general.companies`: List of supported companies, IDs and names
+-   `.general.currencies`: List of supported currencies, IDs and names
+-   `.general.fuelsorts`: List of supported fuelsorts, IDs and names
+-   `.general.quantityunits`: List of supported quantityunits, IDs and names
 
 ## Changelog
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.2
+### 0.0.2-beta.4
 
 -   (ice987987) possibility to add and delete values added
 -   (ice987987) all tanks added
--   (ice987987) `costsnotes.[year].raw` and `fuelings.[year].raw` added
+-   (ice987987) `[vehicleID].costsnotes.[year].raw` and `[vehicleID].fuelings.[year].raw` added
+-   (ice987987) `.ACTIONS.ADD.attributes` and `.ACTIONS.ADD.streets` added
+-   (ice987987) `.general.companies`, `general.currencies`, `.general.fuelsorts` and `.general.quantityunits` added
 -   (ice987987) dependencies updated
 
 ### 0.0.1 (26.11.2022)
