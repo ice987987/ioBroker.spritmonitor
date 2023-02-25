@@ -359,7 +359,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Vehicle ID',
-						desc: 'Vehicle ID',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -371,7 +370,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Make',
-						desc: 'Make',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -383,7 +381,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Model',
-						desc: 'Model',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -395,7 +392,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Consumption value of this fuel type',
-						desc: 'Consumption value of this fuel type',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -407,7 +403,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Name of consumption unit',
-						desc: 'Name of consumption unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -419,7 +414,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Amount of driven distance for this tank (for consumption calculation)',
-						desc: 'Amount of driven distance for this tank (for consumption calculation)',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -431,7 +425,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Trip unit',
-						desc: 'Trip unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -443,7 +436,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Amount of tanked fuel for this tank (for consumption calculation)',
-						desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -455,7 +447,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Maintank',
-						desc: 'Maintank',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -467,7 +458,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Type of tank',
-						desc: 'Type of tank',
 						type: 'number',
 						role: 'state',
 						states: {
@@ -490,7 +480,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Sign',
-						desc: 'Sign',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -502,7 +491,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'picture_ts',
-						desc: 'picture_ts',
 						type: 'number',
 						role: 'value.time',
 						read: true,
@@ -514,7 +502,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Bordcomputer consumption unit',
-						desc: 'Bordcomputer consumption unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -526,7 +513,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Country',
-						desc: 'Country',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -547,7 +533,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'min',
-						desc: 'min',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -559,7 +544,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'avg',
-						desc: 'avg',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -571,7 +555,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -583,7 +566,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -595,7 +577,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -607,7 +588,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -645,7 +625,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Tank ID',
-							desc: 'Tank ID',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -657,7 +636,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Type of tank',
-							desc: 'Type of tank',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -680,7 +658,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Quantity type of tank',
-							desc: 'Quantity type of tank',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -699,7 +676,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Name of fueltype in tank',
-							desc: 'Name of fueltype in tank',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -711,7 +687,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Consumption value of this fuel type',
-							desc: 'Consumption value of this fuel type',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -723,7 +698,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Name of consumption unit',
-							desc: 'Name of consumption unit',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -735,7 +709,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Numeric ID of consumption format',
-							desc: 'Numeric ID of consumption format',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -761,7 +734,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Emission of CO₂ for this vehicle in g/km',
-							desc: 'Emission of CO₂ for this vehicle in g/km',
 							type: 'number',
 							role: 'state',
 							unit: 'g/kg',
@@ -774,7 +746,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for which CO₂ was calculated',
-							desc: 'Amount of driven distance for which CO₂ was calculated',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -786,7 +757,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of emissioned CO₂ in kg',
-							desc: 'Amount of emissioned CO₂ in kg',
 							type: 'number',
 							role: 'state',
 							unit: 'kg',
@@ -799,7 +769,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of money spent for fuel for this tank',
-							desc: 'Amount of money spent for fuel for this tank',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -811,7 +780,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Currency of the fuel expenses',
-							desc: 'Currency of the fuel expenses',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -823,7 +791,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for which the fuel expenses have been summed',
-							desc: 'Amount of driven distance for which the fuel expenses have been summed',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -835,7 +802,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for this tank (for consumption calculation)',
-							desc: 'Amount of driven distance for this tank (for consumption calculation)',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -847,7 +813,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Unit for driven distance (km, mi)',
-							desc: 'Unit for driven distance (km, mi)',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -859,7 +824,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of tanked fuel for this tank (for consumption calculation)',
-							desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -871,7 +835,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
-							desc: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -893,7 +856,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'A JSON array of fuelings',
-						desc: 'A JSON array of fuelings',
 						type: 'array',
 						role: 'state',
 						read: true,
@@ -914,7 +876,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'A JSON array of costs / notes',
-						desc: 'A JSON array of costs / notes',
 						type: 'array',
 						role: 'state',
 						read: true,
@@ -936,7 +897,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'A JSON array of reminders',
-					desc: 'A JSON array of reminders',
 					type: 'array',
 					role: 'state',
 					read: true,
@@ -956,7 +916,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Update values',
-					desc: 'Update values',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -977,7 +936,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Add a new fueling for given tank of given vehicle (single entry)',
-					desc: 'Add a new fueling for given tank of given vehicle (single entry)',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -990,7 +948,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the vehicle to get fuelings for',
-					desc: 'Numeric ID of the vehicle to get fuelings for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1003,7 +960,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the tank to get fuelings for',
-					desc: 'Numeric ID of the tank to get fuelings for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1016,8 +972,7 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.date`, {
 				type: 'state',
 				common: {
-					name: 'Date of the fueling to be added (format: DD.MM.YYYY)',
-					desc: 'Date of the fueling to be added (format: DD.MM.YYYY)',
+					name: 'Date of the fueling to be added (requied format: DD.MM.YYYY)',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1029,7 +984,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Odometer of the fueling to be added',
-					desc: 'Odometer of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1042,7 +996,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Trip of the fueling to be added',
-					desc: 'Trip of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					min: 0.1,
@@ -1055,7 +1008,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Amount of fuel of the fueling to be added',
-					desc: 'Amount of fuel of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					min: 0.1,
@@ -1068,7 +1020,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
-					desc: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
 					type: 'string',
 					role: 'state',
 					states: { invalid: 'invalid', full: 'full', notfull: 'notfull', first: 'first' },
@@ -1081,7 +1032,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Price of the fueling to be added',
-					desc: 'Price of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1093,8 +1043,7 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.currencyid`, {
 				type: 'state',
 				common: {
-					name: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
-					desc: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
+					name: 'Nummeric ID of the currency of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					states: { 0: 'EUR', 1: 'CHF', 2: 'USD', 3: 'CAD', 4: 'GBP', 5: 'DKK', 6: 'NOK', 7: 'SEK', 8: 'PLN', 9: 'SKK', 10: 'CZK', 11: 'HUF', 12: 'SIT', 13: 'DEM', 14: 'BRL', 15: 'HRK', 16: 'BGN', 17: 'ARS', 18: 'CLP', 19: 'AUD', 20: 'LTL', 21: 'LVL', 22: 'RON', 23: 'RUB', 24: 'EEK', 25: 'ILS', 26: 'BYR', 27: 'TRY', 28: 'SGD', 29: 'MYR', 30: 'ISK', 31: 'YEN', 32: 'CNY', 33: 'RSD' },
@@ -1109,7 +1058,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
-					desc: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
 					type: 'number',
 					role: 'state',
 					states: { 0: 'total price', 1: 'unit / liter price' },
@@ -1123,8 +1071,7 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.fuelsortid`, {
 				type: 'state',
 				common: {
-					name: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
-					desc: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
+					name: 'Nummeric ID of the fuelsort of the fueling to be added',
 					type: 'number',
 					role: 'state',
 					states: { 1: 'Diesel', 2: 'Gasoline', 3: 'LPG', 4: 'CNG', 5: 'Electricity', 6: 'AdBlue', 7: 'Hydrogen' },
@@ -1138,8 +1085,7 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.quantityunitid`, {
 				type: 'state',
 				common: {
-					name: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
-					desc: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
+					name: 'Numeric ID of quantity unit',
 					type: 'number',
 					role: 'state',
 					states: { 1: 'Liter', 2: 'Kilogram', 3: 'Gallon (US)', 4: 'Gallon (Imp)', 5: 'Kilowatt hour' },
@@ -1154,7 +1100,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Free text note of the user for the fueling to be added',
-					desc: 'Free text note of the user for the fueling to be added',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1166,7 +1111,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Gas station company for the fueling to be added',
-					desc: 'Gas station company for the fueling to be added',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1178,7 +1122,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Free text location name for the fueling to be added',
-					desc: 'Free text location name for the fueling to be added',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1190,7 +1133,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Country of the gas station for the fueling to be added',
-					desc: 'Country of the gas station for the fueling to be added',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1202,7 +1144,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Consumption according to the vehicles borcomputer',
-					desc: 'Consumption according to the vehicles borcomputer',
 					type: 'number',
 					role: 'state',
 					min: 0.1,
@@ -1215,7 +1156,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Consumed quantity according to the vehicles borcomputer',
-					desc: 'Consumed quantity according to the vehicles borcomputer',
 					type: 'number',
 					role: 'state',
 					min: 0.1,
@@ -1228,7 +1168,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Average speed according to the vehicles borcomputer',
-					desc: 'Average speed according to the vehicles borcomputer',
 					type: 'number',
 					role: 'state',
 					min: 0.1,
@@ -1241,7 +1180,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Latitude of gas station',
-					desc: 'Latitude of gas station',
 					type: 'number',
 					role: 'state',
 					min: -180,
@@ -1255,7 +1193,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Longitude of gas station',
-					desc: 'Longitude of gas station',
 					type: 'number',
 					role: 'state',
 					min: -90,
@@ -1292,7 +1229,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Add new fueling for given tank of given vehicle (Object with a string)',
-					desc: 'Add new fueling for given tank of given vehicle (Object with a string)',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1313,7 +1249,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Delete an existing fueling for given tank of given vehicle',
-					desc: 'Delete an existing fueling for given tank of given vehicle',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -1326,7 +1261,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the vehicle to delete a fueling for',
-					desc: 'Numeric ID of the vehicle to delete a fueling for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1339,7 +1273,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the tank to delete fueling for',
-					desc: 'Numeric ID of the tank to delete fueling for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1353,7 +1286,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the fueling to be deleted',
-					desc: 'Numeric ID of the fueling to be deleted',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1518,7 +1450,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: `A JSON array of fuelings (${years[i]})`,
-					desc: `A JSON array of fuelings (${years[i]})`,
 					type: 'array',
 					role: 'state',
 					read: true,
@@ -1590,7 +1521,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: `A JSON array of costs / notes (${years[i]})`,
-					desc: `A JSON array of costs / notes (${years[i]})`,
 					type: 'array',
 					role: 'state',
 					read: true,
