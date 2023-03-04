@@ -949,6 +949,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Numeric ID of the vehicle to get fuelings for',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -961,6 +962,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Numeric ID of the tank to get fuelings for',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					max: 1,
@@ -974,6 +976,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Date of the fueling to be added (requied format: DD.MM.YYYY)',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -985,6 +988,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Odometer of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -997,8 +1001,9 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Trip of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1009,8 +1014,9 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Amount of fuel of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1021,6 +1027,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
 					type: 'string',
+					def: '',
 					role: 'state',
 					states: { invalid: 'invalid', full: 'full', notfull: 'notfull', first: 'first' },
 					read: true,
@@ -1033,6 +1040,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Price of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -1045,6 +1053,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Nummeric ID of the currency of the fueling to be added',
 					type: 'number',
+					def: 1,
 					role: 'state',
 					states: { 0: 'EUR', 1: 'CHF', 2: 'USD', 3: 'CAD', 4: 'GBP', 5: 'DKK', 6: 'NOK', 7: 'SEK', 8: 'PLN', 9: 'SKK', 10: 'CZK', 11: 'HUF', 12: 'SIT', 13: 'DEM', 14: 'BRL', 15: 'HRK', 16: 'BGN', 17: 'ARS', 18: 'CLP', 19: 'AUD', 20: 'LTL', 21: 'LVL', 22: 'RON', 23: 'RUB', 24: 'EEK', 25: 'ILS', 26: 'BYR', 27: 'TRY', 28: 'SGD', 29: 'MYR', 30: 'ISK', 31: 'YEN', 32: 'CNY', 33: 'RSD' },
 					min: 0,
@@ -1060,6 +1069,7 @@ class Spritmonitor extends utils.Adapter {
 					name: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
 					type: 'number',
 					role: 'state',
+					def: 0,
 					states: { 0: 'total price', 1: 'unit / liter price' },
 					min: 0,
 					max: 1,
@@ -1073,10 +1083,11 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Nummeric ID of the fuelsort of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					states: { 1: 'Diesel', 2: 'Gasoline', 3: 'LPG', 4: 'CNG', 5: 'Electricity', 6: 'AdBlue', 7: 'Hydrogen' },
-					min: 1,
-					max: 7,
+					// [{"id":2,"type":1,"name":"Biodiesel"},{"id":1,"type":1,"name":"Diesel"},{"id":25,"type":1,"name":"GTL Diesel"},{"id":4,"type":1,"name":"Premium Diesel"},{"id":3,"type":1,"name":"Pflanzenöl"},{"id":22,"type":2,"name":"Premium Benzin 100+"},{"id":15,"type":2,"name":"Bioethanol"},{"id":20,"type":2,"name":"E10"},{"id":6,"type":2,"name":"Normalbenzin"},{"id":9,"type":2,"name":"Premium Benzin 100"},{"id":18,"type":2,"name":"Premium Benzin 95"},{"id":8,"type":2,"name":"SuperPlus"},{"id":7,"type":2,"name":"Super"},{"id":16,"type":2,"name":"Zweitakt-Gemisch"},{"id":12,"type":3,"name":"LPG"},{"id":13,"type":4,"name":"CNG H"},{"id":14,"type":4,"name":"CNG L"},{"id":19,"type":5,"name":"Elektrizität"},{"id":24,"type":5,"name":"Ökostrom"},{"id":21,"type":6,"name":"AdBlue"},{"id":23,"type":7,"name":"Wasserstoff"}]
+					// states: { 1: 'Diesel', 2: 'Gasoline', 3: 'LPG', 4: 'CNG', 5: 'Electricity', 6: 'AdBlue', 7: 'Hydrogen' },
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1087,6 +1098,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Numeric ID of quantity unit',
 					type: 'number',
+					def: 1,
 					role: 'state',
 					states: { 1: 'Liter', 2: 'Kilogram', 3: 'Gallon (US)', 4: 'Gallon (Imp)', 5: 'Kilowatt hour' },
 					min: 1,
@@ -1101,6 +1113,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Free text note of the user for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -1112,6 +1125,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Gas station company for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -1123,6 +1137,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Free text location name for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -1133,8 +1148,12 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Country of the gas station for the fueling to be added',
-					type: 'string',
+					type: 'number',
+					def: 0,
 					role: 'state',
+					states: { 1: 'D', 2: 'A', 3: 'CH', 4: 'F', 5: 'B', 6: 'CDN', 7: 'CZ', 8: 'DK', 9: 'E', 10: 'FIN', 11: 'FL', 12: 'GB', 13: 'GR', 14: 'H', 15: 'I', 16: 'IRL', 17: 'IS', 18: 'L', 19: 'LT', 20: 'LV', 21: 'M', 22: 'MA', 23: 'MC', 24: 'N', 25: 'NL', 26: 'P', 27: 'PL', 28: 'RO', 29: 'RUS', 30: 'S', 31: 'SK', 32: 'SLO', 33: 'HR', 34: 'UA', 35: 'AND', 36: 'BIH', 37: 'SRB', 38: 'EST', 39: 'BG'},
+					min: 0,
+					max: 39,
 					read: true,
 					write: true,
 				},
@@ -1145,8 +1164,9 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Consumption according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1157,8 +1177,9 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Consumed quantity according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1169,8 +1190,9 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Average speed according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1181,6 +1203,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Latitude of gas station',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: -180,
 					max: 180,
@@ -1194,6 +1217,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Longitude of gas station',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: -90,
 					max: 90,
@@ -1207,6 +1231,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Combination of one tire type (wintertires, summertires, allyeartires) and one driving style (slow, normal, fast) and one or more extras (ac, heating, trailer)',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -1218,6 +1243,7 @@ class Spritmonitor extends utils.Adapter {
 				common: {
 					name: 'Combination of city, autobahn, land',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -1847,10 +1873,9 @@ class Spritmonitor extends utils.Adapter {
 					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
 					if (attributes && attributes.val) {
 						// remove dublicates
-						const attrMod = [...new Set(attributes.val.split(','))];
+						const attrMod = attributes.filter((item, index) => arr.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: attrMod: ${attrMod}`);
-
-						if (attrMod.every(element => { return ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element); })) {
+						if (attrMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
 							APIstring += `&attributes=${attrMod}`;
 						} else {
 							this.log.info(`[onStateChange]: attribut(es) not valid. Value not added.`);
@@ -1859,9 +1884,10 @@ class Spritmonitor extends utils.Adapter {
 					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
 					if (streets && streets.val) {
 						// remove dublicates
-						const streetsMod = [...new Set(streets.val.split(','))];
+						const streetsMod = streets.filter((item, index) => arr.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
-						if (streetsMod.every(element => { return ['city', 'autobahn', 'land'].includes(element); })) {
+						// check if only allowed elements
+						if (streetsMod.every((element) => ['city', 'autobahn', 'land'].includes(element))) {
 							APIstring += `&streets=${streetsMod}`;
 						} else {
 							this.log.info(`[onStateChange]: streets not valid. Value not added.`);

@@ -107,6 +107,14 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.general.fuelsorts`: List of supported fuelsorts, IDs and names
 -   `.general.quantityunits`: List of supported quantityunits, IDs and names
 
+## How to report issues and feature requests
+
+-   For issues please use [GitHub issues](https://github.com/ice987987/ioBroker.spritmonitor/issues/new/choose) -> "Bug report" and fill in the form.
+
+    Set the adapter to debug log mode (Instances -> Expert mode -> Column Log level). Get the logfile from disk (subdirectory "log" in ioBroker installation directory and not from Admin because Admin cuts the lines). Check that there are no personal information before you publish your log.
+
+-   For feature requests please use [GitHub issues](https://github.com/ice987987/ioBroker.spritmonitor/issues/new/choose) -> "Feature request" and fill in the form.
+
 ## Changelog
 
 <!-- ### **WORK IN PROGRESS** -->
