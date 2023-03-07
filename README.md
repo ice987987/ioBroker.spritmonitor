@@ -61,6 +61,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.ACTIONS.DEL.vehicleId`[^1]: Numeric ID of the vehicle to delete a fueling for
 -   `.ACTIONS.DEL.tankId`[^1]: Numeric ID of the tank to delete a fueling for
 -   `.ACTIONS.DEL.fuelingId`[^1]: Numeric ID of the fueling to be deleted
+-   `Area` / `Grossraum` is not supported by the API
 
 [^1]: required values
 

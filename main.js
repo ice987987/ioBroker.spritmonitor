@@ -1873,7 +1873,7 @@ class Spritmonitor extends utils.Adapter {
 					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
 					if (attributes && attributes.val) {
 						// remove dublicates
-						const attrMod = attributes.filter((item, index) => arr.indexOf(item) === index);
+						const attrMod = attributes.filter((item, index) => attributes.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: attrMod: ${attrMod}`);
 						if (attrMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
 							APIstring += `&attributes=${attrMod}`;
@@ -1884,7 +1884,7 @@ class Spritmonitor extends utils.Adapter {
 					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
 					if (streets && streets.val) {
 						// remove dublicates
-						const streetsMod = streets.filter((item, index) => arr.indexOf(item) === index);
+						const streetsMod = streets.filter((item, index) => streets.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
 						// check if only allowed elements
 						if (streetsMod.every((element) => ['city', 'autobahn', 'land'].includes(element))) {
