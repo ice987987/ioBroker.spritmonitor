@@ -1873,10 +1873,11 @@ class Spritmonitor extends utils.Adapter {
 					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
 					if (attributes && attributes.val) {
 						// remove dublicates
-						const attrMod = attributes.filter((item, index) => attributes.indexOf(item) === index);
-						this.log.debug(`[onStateChange]: attrMod: ${attrMod}`);
-						if (attrMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
-							APIstring += `&attributes=${attrMod}`;
+						let attributesMod = attributes.val.split(',');
+						attributesMod = attributesMod.filter((item, index) => attributesMod.indexOf(item) === index);
+						this.log.debug(`[onStateChange]: attributesMod: ${attributesMod}`);
+						if (attributesMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
+							APIstring += `&attributes=${attributesMod}`;
 						} else {
 							this.log.info(`[onStateChange]: attribut(es) not valid. Value not added.`);
 						}
@@ -1884,7 +1885,8 @@ class Spritmonitor extends utils.Adapter {
 					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
 					if (streets && streets.val) {
 						// remove dublicates
-						const streetsMod = streets.filter((item, index) => streets.indexOf(item) === index);
+						let streetsMod = streets.val.split(',');
+						streetsMod = streetsMod.filter((item, index) => streetsMod.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
 						// check if only allowed elements
 						if (streetsMod.every((element) => ['city', 'autobahn', 'land'].includes(element))) {
@@ -1898,30 +1900,28 @@ class Spritmonitor extends utils.Adapter {
 
 					await this.addFueling(vehicleId.val, tankId.val, APIstring);
 
-					// reset all userinputs
-					/*
-					this.setState(`ACTIONS.ADD.vehicleId`, null);
-					this.setState(`ACTIONS.ADD.tankId`, null);
-					this.setState(`ACTIONS.ADD.date`, null);
-					this.setState(`ACTIONS.ADD.odometer`, null);
-					this.setState(`ACTIONS.ADD.trip`, null);
-					this.setState(`ACTIONS.ADD.quantity`, null);
-					this.setState(`ACTIONS.ADD.type`, null);
-					this.setState(`ACTIONS.ADD.price`, null);
-					this.setState(`ACTIONS.ADD.currencyid`, null);
-					this.setState(`ACTIONS.ADD.pricetype`, null);
-					this.setState(`ACTIONS.ADD.fuelsortid`, null);
-					this.setState(`ACTIONS.ADD.quantityunitid`, null);
-					this.setState(`ACTIONS.ADD.note`, null);
-					this.setState(`ACTIONS.ADD.stationname`, null);
-					this.setState(`ACTIONS.ADD.location`, null);
-					this.setState(`ACTIONS.ADD.country`, null);
-					this.setState(`ACTIONS.ADD.bc_consumption`, null);
-					this.setState(`ACTIONS.ADD.bc_quantity`, null);
-					this.setState(`ACTIONS.ADD.bc_speed`, null);
-					this.setState(`ACTIONS.ADD.position_lat`, null);
-					this.setState(`ACTIONS.ADD.position_long`, null);
-					*/
+					// reset several userinputs
+					// this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
+					// this.setState(`ACTIONS.ADD.tankId`, 0, true);
+					this.setState(`ACTIONS.ADD.date`, '', true);
+					this.setState(`ACTIONS.ADD.odometer`, 0, true);
+					this.setState(`ACTIONS.ADD.trip`, 0, true);
+					this.setState(`ACTIONS.ADD.quantity`, 0, true);
+					// this.setState(`ACTIONS.ADD.type`, 0, true);
+					this.setState(`ACTIONS.ADD.price`, 0, true);
+					// this.setState(`ACTIONS.ADD.currencyid`, 0, true);
+					// this.setState(`ACTIONS.ADD.pricetype`, 0, true);
+					// this.setState(`ACTIONS.ADD.fuelsortid`, 0, true);
+					this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
+					this.setState(`ACTIONS.ADD.note`, '', true);
+					this.setState(`ACTIONS.ADD.stationname`,'', true);
+					this.setState(`ACTIONS.ADD.location`, '', true);
+					// this.setState(`ACTIONS.ADD.country`, '', true);
+					this.setState(`ACTIONS.ADD.bc_consumption`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
+					this.setState(`ACTIONS.ADD.position_long`, 0, true);
 
 					await this.getFuelings(vehicleId.val);
 				}
@@ -1934,7 +1934,7 @@ class Spritmonitor extends utils.Adapter {
 					// TODO
 
 					// reset userinput
-					this.setState(`ACTIONS.ADD.ADD_RAW`, null);
+					this.setState(`ACTIONS.ADD.ADD_RAW`, [], true);
 				}
 				*/
 
@@ -1972,10 +1972,10 @@ class Spritmonitor extends utils.Adapter {
 
 					await this.delFueling(vehicleId.val, tankId.val, fuelingId.val);
 
-					// reset all userinputs
-					this.setState(`ACTIONS.DEL.vehicleId`, null);
-					this.setState(`ACTIONS.DEL.tankId`, null);
-					this.setState(`ACTIONS.DEL.fuelingId`, null);
+					// reset userinputs
+					this.setState(`ACTIONS.DEL.vehicleId`, 0, true);
+					this.setState(`ACTIONS.DEL.tankId`, 0, true);
+					this.setState(`ACTIONS.DEL.fuelingId`, 0, true);
 
 					await this.getFuelings(vehicleId.val);
 				}
