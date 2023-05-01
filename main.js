@@ -1151,7 +1151,7 @@ class Spritmonitor extends utils.Adapter {
 					type: 'number',
 					def: 0,
 					role: 'state',
-					states: { 1: 'D', 2: 'A', 3: 'CH', 4: 'F', 5: 'B', 6: 'CDN', 7: 'CZ', 8: 'DK', 9: 'E', 10: 'FIN', 11: 'FL', 12: 'GB', 13: 'GR', 14: 'H', 15: 'I', 16: 'IRL', 17: 'IS', 18: 'L', 19: 'LT', 20: 'LV', 21: 'M', 22: 'MA', 23: 'MC', 24: 'N', 25: 'NL', 26: 'P', 27: 'PL', 28: 'RO', 29: 'RUS', 30: 'S', 31: 'SK', 32: 'SLO', 33: 'HR', 34: 'UA', 35: 'AND', 36: 'BIH', 37: 'SRB', 38: 'EST', 39: 'BG'},
+					states: { 1: 'D', 2: 'A', 3: 'CH', 4: 'F', 5: 'B', 6: 'CDN', 7: 'CZ', 8: 'DK', 9: 'E', 10: 'FIN', 11: 'FL', 12: 'GB', 13: 'GR', 14: 'H', 15: 'I', 16: 'IRL', 17: 'IS', 18: 'L', 19: 'LT', 20: 'LV', 21: 'M', 22: 'MA', 23: 'MC', 24: 'N', 25: 'NL', 26: 'P', 27: 'PL', 28: 'RO', 29: 'RUS', 30: 'S', 31: 'SK', 32: 'SLO', 33: 'HR', 34: 'UA', 35: 'AND', 36: 'BIH', 37: 'SRB', 38: 'EST', 39: 'BG' },
 					min: 0,
 					max: 39,
 					read: true,
@@ -1912,16 +1912,16 @@ class Spritmonitor extends utils.Adapter {
 					// this.setState(`ACTIONS.ADD.currencyid`, 0, true);
 					// this.setState(`ACTIONS.ADD.pricetype`, 0, true);
 					// this.setState(`ACTIONS.ADD.fuelsortid`, 0, true);
-					this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
+					// this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
 					this.setState(`ACTIONS.ADD.note`, '', true);
-					this.setState(`ACTIONS.ADD.stationname`,'', true);
+					this.setState(`ACTIONS.ADD.stationname`, '', true);
 					this.setState(`ACTIONS.ADD.location`, '', true);
 					// this.setState(`ACTIONS.ADD.country`, '', true);
 					this.setState(`ACTIONS.ADD.bc_consumption`, 0, true);
 					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
 					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
 					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
-					this.setState(`ACTIONS.ADD.position_long`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lon`, 0, true);
 
 					await this.getFuelings(vehicleId.val);
 				}
