@@ -1354,9 +1354,6 @@ class Spritmonitor extends utils.Adapter {
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.total`, { val: vehicles[i].rankingInfo.total, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.rank`, { val: vehicles[i].rankingInfo.rank, ack: true });
 			*/
-
-			//vehicleIDs.push(vehicles[i].id);
-			// this.log.debug(`[fillObjectsVehicles]: ${vehicleIDs}`);
 		}
 	}
 
@@ -1588,8 +1585,6 @@ class Spritmonitor extends utils.Adapter {
 	async fillObjectsReminders(reminders) {
 		this.setStateAsync(`reminders.raw`, { val: JSON.stringify(reminders), ack: true });
 	}
-
-	// https://api.spritmonitor.de/v1/vehicle/123456/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
 
 	async addFueling(vehicleId, tankId, val) {
 		await axios({
