@@ -9,11 +9,11 @@
 const utils = require('@iobroker/adapter-core');
 
 // Load your modules here, e.g.:
-const axios = require('axios');
+const axios = require('axios').default;
 
 // variables
 const isValidApplicationKey = /[a-zA-Z0-9]{50}/; // format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-const vehicleIDs = [];
+let vehicleIDs = [];
 
 class Spritmonitor extends utils.Adapter {
 	/**
@@ -27,10 +27,6 @@ class Spritmonitor extends utils.Adapter {
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
 		this.on('unload', this.onUnload.bind(this));
-
-		this.requestClient = axios.create();
-
-		this.vehicles = {};
 
 		this.requestInterval = null;
 		this.firstStart = true;
@@ -65,8 +61,7 @@ class Spritmonitor extends utils.Adapter {
 		try {
 			// get all vehicles
 			await this.getVehicles();
-			await this.createObjects(this.vehicles);
-			await this.fillObjectsVehicles(this.vehicles);
+
 			for (let i = 0; i < vehicleIDs.length; i++) {
 				await this.getTanks(vehicleIDs[i]);
 				await this.getFuelings(vehicleIDs[i]);
@@ -74,10 +69,14 @@ class Spritmonitor extends utils.Adapter {
 			}
 			await this.getReminders();
 
+			await this.getFuelsorts();
+			await this.getCurrencies();
+			await this.getQuantityunits();
+			await this.getCompanies();
+
 			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
 			this.requestInterval = setInterval(async () => {
 				await this.getVehicles();
-				await this.fillObjectsVehicles(this.vehicles);
 				for (let i = 0; i < vehicleIDs.length; i++) {
 					await this.getTanks(vehicleIDs[i]);
 					await this.getFuelings(vehicleIDs[i]);
@@ -88,13 +87,11 @@ class Spritmonitor extends utils.Adapter {
 		} catch (error) {
 			this.log.error(`${error} (ERR_#003)`);
 		}
-
 	}
 
 	// https://api.spritmonitor.de/doc
 	async getVehicles() {
-
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/vehicles.json',
 			headers: {
@@ -103,11 +100,15 @@ class Spritmonitor extends utils.Adapter {
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
-			.then((response) => {
+			.then(async (response) => {
 				this.log.debug(`[getVehiclesData]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
-				this.vehicles = response.data;
-
+				if (this.firstStart) {
+					await this.createObjects(response.data);
+					vehicleIDs = response.data.map(d => d.id);
+					this.firstStart = false;
+				}
+				await this.fillObjectsVehicles(response.data);
 			})
 			.catch((error) => {
 				if (error.response) {
@@ -124,6 +125,214 @@ class Spritmonitor extends utils.Adapter {
 					this.log.debug(`[getVehiclesData]: error message: ${error.message}`);
 				}
 				this.log.debug(`[getVehiclesData]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getFuelsorts() {
+		await axios({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/fuelsorts.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getFuelsorts]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.fuelsorts`, {
+					type: 'state',
+					common: {
+						name: 'List of supported fuelsorts, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.fuelsorts`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getFuelsorts]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getFuelsorts]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getFuelsorts]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getFuelsorts]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getCurrencies() {
+		await axios({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/currencies.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getCurrencies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.currencies`, {
+					type: 'state',
+					common: {
+						name: 'List of supported currencies, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.currencies`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getCurrencies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getCurrencies]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getCurrencies]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getCurrencies]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getQuantityunits() {
+		await axios({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/quantityunits.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getQuantityunits]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.quantityunits`, {
+					type: 'state',
+					common: {
+						name: 'List of supported quantityunits, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.quantityunits`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getQuantityunits]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getQuantityunits]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getQuantityunits]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getQuantityunits]: error.config: ${JSON.stringify(error.config)}`);
+			});
+	}
+
+	async getCompanies() {
+		await axios({
+			method: 'GET',
+			url: 'https://api.spritmonitor.de/v1/companies.json',
+			headers: {
+				'Authorization': `Bearer ${this.config.applicationKey}`,
+				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
+				'User-Agent': 'ioBroker Spritmonitor API Access'
+			},
+		})
+			.then(async (response) => {
+				this.log.debug(`[getCompanies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
+
+				await this.setObjectNotExistsAsync('general', {
+					type: 'channel',
+					common: {
+						name: 'General queries for Spritmonitor',
+					},
+					native: {},
+				});
+				await this.setObjectNotExistsAsync(`general.companies`, {
+					type: 'state',
+					common: {
+						name: 'List of supported companies, IDs and names',
+						type: 'array',
+						role: 'state',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+
+				this.setStateAsync(`general.companies`, { val: JSON.stringify(response.data), ack: true });
+			})
+			.catch((error) => {
+				if (error.response) {
+					// The request was made and the server responded with a status code that falls out of the range of 2xx
+					this.log.debug(`[getCompanies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
+					if (error.response.status === 401) {
+						throw new Error('Authentification failed. Check Application-Id. (ERR_#006)');
+					}
+				} else if (error.request) {
+					// The request was made but no response was received `error.request` is an instance of XMLHttpRequest in the browser and an instance of http.ClientRequest in node.js
+					this.log.debug(`[getCompanies]: error request: ${error}`);
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.log.debug(`[getCompanies]: error message: ${error.message}`);
+				}
+				this.log.debug(`[getCompanies]: error.config: ${JSON.stringify(error.config)}`);
 			});
 	}
 
@@ -147,7 +356,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Vehicle ID',
-						desc: 'Vehicle ID',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -159,7 +367,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Make',
-						desc: 'Make',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -171,7 +378,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Model',
-						desc: 'Model',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -183,7 +389,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Consumption value of this fuel type',
-						desc: 'Consumption value of this fuel type',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -195,7 +400,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Name of consumption unit',
-						desc: 'Name of consumption unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -207,7 +411,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Amount of driven distance for this tank (for consumption calculation)',
-						desc: 'Amount of driven distance for this tank (for consumption calculation)',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -219,7 +422,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Trip unit',
-						desc: 'Trip unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -231,7 +433,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Amount of tanked fuel for this tank (for consumption calculation)',
-						desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -243,7 +444,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Maintank',
-						desc: 'Maintank',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -255,7 +455,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Type of tank',
-						desc: 'Type of tank',
 						type: 'number',
 						role: 'state',
 						states: {
@@ -278,7 +477,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Sign',
-						desc: 'Sign',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -290,7 +488,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'picture_ts',
-						desc: 'picture_ts',
 						type: 'number',
 						role: 'value.time',
 						read: true,
@@ -302,7 +499,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Bordcomputer consumption unit',
-						desc: 'Bordcomputer consumption unit',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -314,7 +510,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'Country',
-						desc: 'Country',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -335,7 +530,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'min',
-						desc: 'min',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -347,7 +541,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'avg',
-						desc: 'avg',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -359,7 +552,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -371,7 +563,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'string',
 						role: 'state',
 						read: true,
@@ -383,7 +574,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -395,7 +585,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'max',
-						desc: 'max',
 						type: 'number',
 						role: 'state',
 						read: true,
@@ -433,7 +622,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Tank ID',
-							desc: 'Tank ID',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -445,7 +633,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Type of tank',
-							desc: 'Type of tank',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -468,7 +655,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Quantity type of tank',
-							desc: 'Quantity type of tank',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -487,7 +673,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Name of fueltype in tank',
-							desc: 'Name of fueltype in tank',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -499,7 +684,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Consumption value of this fuel type',
-							desc: 'Consumption value of this fuel type',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -511,7 +695,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Name of consumption unit',
-							desc: 'Name of consumption unit',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -523,7 +706,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Numeric ID of consumption format',
-							desc: 'Numeric ID of consumption format',
 							type: 'number',
 							role: 'state',
 							states: {
@@ -549,7 +731,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Emission of CO₂ for this vehicle in g/km',
-							desc: 'Emission of CO₂ for this vehicle in g/km',
 							type: 'number',
 							role: 'state',
 							unit: 'g/kg',
@@ -562,7 +743,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for which CO₂ was calculated',
-							desc: 'Amount of driven distance for which CO₂ was calculated',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -574,7 +754,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of emissioned CO₂ in kg',
-							desc: 'Amount of emissioned CO₂ in kg',
 							type: 'number',
 							role: 'state',
 							unit: 'kg',
@@ -587,7 +766,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of money spent for fuel for this tank',
-							desc: 'Amount of money spent for fuel for this tank',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -599,7 +777,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Currency of the fuel expenses',
-							desc: 'Currency of the fuel expenses',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -611,7 +788,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for which the fuel expenses have been summed',
-							desc: 'Amount of driven distance for which the fuel expenses have been summed',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -623,7 +799,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of driven distance for this tank (for consumption calculation)',
-							desc: 'Amount of driven distance for this tank (for consumption calculation)',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -635,7 +810,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Unit for driven distance (km, mi)',
-							desc: 'Unit for driven distance (km, mi)',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -647,7 +821,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Amount of tanked fuel for this tank (for consumption calculation)',
-							desc: 'Amount of tanked fuel for this tank (for consumption calculation)',
 							type: 'number',
 							role: 'state',
 							read: true,
@@ -659,7 +832,6 @@ class Spritmonitor extends utils.Adapter {
 						type: 'state',
 						common: {
 							name: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
-							desc: 'Unit for tanked fuel (l, GAL, kg, kWh, ...)',
 							type: 'string',
 							role: 'state',
 							read: true,
@@ -681,7 +853,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'A JSON array of fuelings',
-						desc: 'A JSON array of fuelings',
 						type: 'array',
 						role: 'state',
 						read: true,
@@ -702,7 +873,6 @@ class Spritmonitor extends utils.Adapter {
 					type: 'state',
 					common: {
 						name: 'A JSON array of costs / notes',
-						desc: 'A JSON array of costs / notes',
 						type: 'array',
 						role: 'state',
 						read: true,
@@ -724,7 +894,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'A JSON array of reminders',
-					desc: 'A JSON array of reminders',
 					type: 'array',
 					role: 'state',
 					read: true,
@@ -744,7 +913,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Update values',
-					desc: 'Update values',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -765,7 +933,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Add a new fueling for given tank of given vehicle (single entry)',
-					desc: 'Add a new fueling for given tank of given vehicle (single entry)',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -778,8 +945,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the vehicle to get fuelings for',
-					desc: 'Numeric ID of the vehicle to get fuelings for',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -791,8 +958,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the tank to get fuelings for',
-					desc: 'Numeric ID of the tank to get fuelings for',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					max: 1,
@@ -804,9 +971,9 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.date`, {
 				type: 'state',
 				common: {
-					name: 'Date of the fueling to be added (format: DD.MM.YYYY)',
-					desc: 'Date of the fueling to be added (format: DD.MM.YYYY)',
+					name: 'Date of the fueling to be added (requied format: DD.MM.YYYY)',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -817,8 +984,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Odometer of the fueling to be added',
-					desc: 'Odometer of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -830,10 +997,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Trip of the fueling to be added',
-					desc: 'Trip of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -843,10 +1010,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Amount of fuel of the fueling to be added',
-					desc: 'Amount of fuel of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -856,9 +1023,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
-					desc: 'Type of fueling to be added (allowed values: invalid, full, notfull, first)',
 					type: 'string',
+					def: '',
 					role: 'state',
+					states: { invalid: 'invalid', full: 'full', notfull: 'notfull', first: 'first' },
 					read: true,
 					write: true,
 				},
@@ -868,8 +1036,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Price of the fueling to be added',
-					desc: 'Price of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: 0,
 					read: true,
@@ -880,10 +1048,11 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.currencyid`, {
 				type: 'state',
 				common: {
-					name: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
-					desc: 'Nummeric ID of the currency of the fueling to be added (allowed values: 0: EUR, 1: CHF, 2: USD, 3: CAD, 4: GBP, 5: DKK, 6: NOK, 7: SEK, 8: PLN, 9: SKK, 10: CZK, 11: HUF, 12: SIT, 13: DEM, 14: BRL, 15: HRK, 16: BGN, 17: ARS, 18: CLP, 19: AUD, 20: LTL, 21: LVL, 22: RON, 23: RUB, 24: EEK, 25: ILS, 26: BYR, 27: TRY, 28: SGD, 29: MYR, 30: ISK, 31: YEN, 32: CNY, 33: RSD)',
+					name: 'Nummeric ID of the currency of the fueling to be added',
 					type: 'number',
+					def: 1,
 					role: 'state',
+					states: { 0: 'EUR', 1: 'CHF', 2: 'USD', 3: 'CAD', 4: 'GBP', 5: 'DKK', 6: 'NOK', 7: 'SEK', 8: 'PLN', 9: 'SKK', 10: 'CZK', 11: 'HUF', 12: 'SIT', 13: 'DEM', 14: 'BRL', 15: 'HRK', 16: 'BGN', 17: 'ARS', 18: 'CLP', 19: 'AUD', 20: 'LTL', 21: 'LVL', 22: 'RON', 23: 'RUB', 24: 'EEK', 25: 'ILS', 26: 'BYR', 27: 'TRY', 28: 'SGD', 29: 'MYR', 30: 'ISK', 31: 'YEN', 32: 'CNY', 33: 'RSD' },
 					min: 0,
 					max: 33,
 					read: true,
@@ -895,9 +1064,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
-					desc: 'Nummeric ID of price (allowed values: 0: total price, 1: unit / liter price)',
 					type: 'number',
 					role: 'state',
+					def: 0,
+					states: { 0: 'total price', 1: 'unit / liter price' },
 					min: 0,
 					max: 1,
 					read: true,
@@ -908,12 +1078,13 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.fuelsortid`, {
 				type: 'state',
 				common: {
-					name: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
-					desc: 'Nummeric ID of the fuelsort of the fueling to be added (allowed values: 1: Diesel, 2: Gasoline, 3: LPG, 4: CNG, 5: Electricity, 6: AdBlue, 7: Hydrogen)',
+					name: 'Nummeric ID of the fuelsort of the fueling to be added',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 1,
-					max: 7,
+					// [{"id":2,"type":1,"name":"Biodiesel"},{"id":1,"type":1,"name":"Diesel"},{"id":25,"type":1,"name":"GTL Diesel"},{"id":4,"type":1,"name":"Premium Diesel"},{"id":3,"type":1,"name":"Pflanzenöl"},{"id":22,"type":2,"name":"Premium Benzin 100+"},{"id":15,"type":2,"name":"Bioethanol"},{"id":20,"type":2,"name":"E10"},{"id":6,"type":2,"name":"Normalbenzin"},{"id":9,"type":2,"name":"Premium Benzin 100"},{"id":18,"type":2,"name":"Premium Benzin 95"},{"id":8,"type":2,"name":"SuperPlus"},{"id":7,"type":2,"name":"Super"},{"id":16,"type":2,"name":"Zweitakt-Gemisch"},{"id":12,"type":3,"name":"LPG"},{"id":13,"type":4,"name":"CNG H"},{"id":14,"type":4,"name":"CNG L"},{"id":19,"type":5,"name":"Elektrizität"},{"id":24,"type":5,"name":"Ökostrom"},{"id":21,"type":6,"name":"AdBlue"},{"id":23,"type":7,"name":"Wasserstoff"}]
+					// states: { 1: 'Diesel', 2: 'Gasoline', 3: 'LPG', 4: 'CNG', 5: 'Electricity', 6: 'AdBlue', 7: 'Hydrogen' },
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -922,10 +1093,11 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(`ACTIONS.ADD.quantityunitid`, {
 				type: 'state',
 				common: {
-					name: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
-					desc: 'Numeric ID of quantity unit (allowed values: 1: Liter, 2: Kilogram, 3: Gallon (US), 4: Gallon (Imp), 5: Kilowatt hour)',
+					name: 'Numeric ID of quantity unit',
 					type: 'number',
+					def: 1,
 					role: 'state',
+					states: { 1: 'Liter', 2: 'Kilogram', 3: 'Gallon (US)', 4: 'Gallon (Imp)', 5: 'Kilowatt hour' },
 					min: 1,
 					max: 5,
 					read: true,
@@ -937,8 +1109,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Free text note of the user for the fueling to be added',
-					desc: 'Free text note of the user for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -949,8 +1121,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Gas station company for the fueling to be added',
-					desc: 'Gas station company for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -961,8 +1133,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Free text location name for the fueling to be added',
-					desc: 'Free text location name for the fueling to be added',
 					type: 'string',
+					def: '',
 					role: 'state',
 					read: true,
 					write: true,
@@ -973,9 +1145,12 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Country of the gas station for the fueling to be added',
-					desc: 'Country of the gas station for the fueling to be added',
-					type: 'string',
+					type: 'number',
+					def: 0,
 					role: 'state',
+					states: { 1: 'D', 2: 'A', 3: 'CH', 4: 'F', 5: 'B', 6: 'CDN', 7: 'CZ', 8: 'DK', 9: 'E', 10: 'FIN', 11: 'FL', 12: 'GB', 13: 'GR', 14: 'H', 15: 'I', 16: 'IRL', 17: 'IS', 18: 'L', 19: 'LT', 20: 'LV', 21: 'M', 22: 'MA', 23: 'MC', 24: 'N', 25: 'NL', 26: 'P', 27: 'PL', 28: 'RO', 29: 'RUS', 30: 'S', 31: 'SK', 32: 'SLO', 33: 'HR', 34: 'UA', 35: 'AND', 36: 'BIH', 37: 'SRB', 38: 'EST', 39: 'BG' },
+					min: 0,
+					max: 39,
 					read: true,
 					write: true,
 				},
@@ -985,10 +1160,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Consumption according to the vehicles borcomputer',
-					desc: 'Consumption according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -998,10 +1173,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Consumed quantity according to the vehicles borcomputer',
-					desc: 'Consumed quantity according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1011,10 +1186,10 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Average speed according to the vehicles borcomputer',
-					desc: 'Average speed according to the vehicles borcomputer',
 					type: 'number',
+					def: 0,
 					role: 'state',
-					min: 0.1,
+					min: 0,
 					read: true,
 					write: true,
 				},
@@ -1024,8 +1199,8 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Latitude of gas station',
-					desc: 'Latitude of gas station',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: -180,
 					max: 180,
@@ -1038,11 +1213,35 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Longitude of gas station',
-					desc: 'Longitude of gas station',
 					type: 'number',
+					def: 0,
 					role: 'state',
 					min: -90,
 					max: 90,
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.attributes`, {
+				type: 'state',
+				common: {
+					name: 'Combination of one tire type (wintertires, summertires, allyeartires) and one driving style (slow, normal, fast) and one or more extras (ac, heating, trailer)',
+					type: 'string',
+					def: '',
+					role: 'state',
+					read: true,
+					write: true,
+				},
+				native: {},
+			});
+			await this.setObjectNotExistsAsync(`ACTIONS.ADD.streets`, {
+				type: 'state',
+				common: {
+					name: 'Combination of city, autobahn, land',
+					type: 'string',
+					def: '',
+					role: 'state',
 					read: true,
 					write: true,
 				},
@@ -1053,7 +1252,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Add new fueling for given tank of given vehicle (Object with a string)',
-					desc: 'Add new fueling for given tank of given vehicle (Object with a string)',
 					type: 'string',
 					role: 'state',
 					read: true,
@@ -1074,7 +1272,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Delete an existing fueling for given tank of given vehicle',
-					desc: 'Delete an existing fueling for given tank of given vehicle',
 					type: 'boolean',
 					def: false,
 					role: 'button',
@@ -1087,7 +1284,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the vehicle to delete a fueling for',
-					desc: 'Numeric ID of the vehicle to delete a fueling for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1100,7 +1296,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the tank to delete fueling for',
-					desc: 'Numeric ID of the tank to delete fueling for',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1114,7 +1309,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: 'Numeric ID of the fueling to be deleted',
-					desc: 'Numeric ID of the fueling to be deleted',
 					type: 'number',
 					role: 'state',
 					min: 0,
@@ -1160,14 +1354,11 @@ class Spritmonitor extends utils.Adapter {
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.total`, { val: vehicles[i].rankingInfo.total, ack: true });
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.rank`, { val: vehicles[i].rankingInfo.rank, ack: true });
 			*/
-
-			vehicleIDs.push(vehicles[i].id);
-			// this.log.debug(`[fillObjectsVehicles]: ${vehicleIDs}`);
 		}
 	}
 
 	async getTanks(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tanks.json`,
 			headers: {
@@ -1220,7 +1411,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getFuelings(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/fuelings.json?limit=10000`,
 			headers: {
@@ -1279,7 +1470,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: `A JSON array of fuelings (${years[i]})`,
-					desc: `A JSON array of fuelings (${years[i]})`,
 					type: 'array',
 					role: 'state',
 					read: true,
@@ -1292,7 +1482,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getCostsnotes(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/costsnotes.json?limit=10000`,
 			headers: {
@@ -1351,7 +1541,6 @@ class Spritmonitor extends utils.Adapter {
 				type: 'state',
 				common: {
 					name: `A JSON array of costs / notes (${years[i]})`,
-					desc: `A JSON array of costs / notes (${years[i]})`,
 					type: 'array',
 					role: 'state',
 					read: true,
@@ -1364,7 +1553,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getReminders() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/reminders.json`,
 			headers: {
@@ -1397,10 +1586,8 @@ class Spritmonitor extends utils.Adapter {
 		this.setStateAsync(`reminders.raw`, { val: JSON.stringify(reminders), ack: true });
 	}
 
-	// https://api.spritmonitor.de/v1/vehicle/763356/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
-
 	async addFueling(vehicleId, tankId, val) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling.json?${val}`,
 			headers: {
@@ -1431,7 +1618,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async delFueling(vehicleId, tankId, fuelingId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling/${fuelingId}.delete`,
 			headers: {
@@ -1527,7 +1714,6 @@ class Spritmonitor extends utils.Adapter {
 
 				if (command === 'UPDATE' && state.val) {
 					await this.getVehicles();
-					await this.fillObjectsVehicles(this.vehicles);
 
 					for (let i = 0; i < vehicleIDs.length; i++) {
 						await this.getTanks(vehicleIDs[i]);
@@ -1675,33 +1861,58 @@ class Spritmonitor extends utils.Adapter {
 							this.log.info(`[onStateChange]: Position not valid. Value not added.`);
 						}
 					}
+					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
+					if (attributes && attributes.val) {
+						// remove dublicates
+						let attributesMod = attributes.val.split(',');
+						attributesMod = attributesMod.filter((item, index) => attributesMod.indexOf(item) === index);
+						this.log.debug(`[onStateChange]: attributesMod: ${attributesMod}`);
+						if (attributesMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
+							APIstring += `&attributes=${attributesMod}`;
+						} else {
+							this.log.info(`[onStateChange]: attribut(es) not valid. Value not added.`);
+						}
+					}
+					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
+					if (streets && streets.val) {
+						// remove dublicates
+						let streetsMod = streets.val.split(',');
+						streetsMod = streetsMod.filter((item, index) => streetsMod.indexOf(item) === index);
+						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
+						// check if only allowed elements
+						if (streetsMod.every((element) => ['city', 'autobahn', 'land'].includes(element))) {
+							APIstring += `&streets=${streetsMod}`;
+						} else {
+							this.log.info(`[onStateChange]: streets not valid. Value not added.`);
+						}
+					}
 
 					this.log.debug(`[onStateChange]: APIstring ${APIstring}`);
 
 					await this.addFueling(vehicleId.val, tankId.val, APIstring);
 
-					// reset all userinputs
-					this.setState(`ACTIONS.ADD.vehicleId`, null);
-					this.setState(`ACTIONS.ADD.tankId`, null);
-					this.setState(`ACTIONS.ADD.date`, null);
-					this.setState(`ACTIONS.ADD.odometer`, null);
-					this.setState(`ACTIONS.ADD.trip`, null);
-					this.setState(`ACTIONS.ADD.quantity`, null);
-					this.setState(`ACTIONS.ADD.type`, null);
-					this.setState(`ACTIONS.ADD.price`, null);
-					this.setState(`ACTIONS.ADD.currencyid`, null);
-					this.setState(`ACTIONS.ADD.pricetype`, null);
-					this.setState(`ACTIONS.ADD.fuelsortid`, null);
-					this.setState(`ACTIONS.ADD.quantityunitid`, null);
-					this.setState(`ACTIONS.ADD.note`, null);
-					this.setState(`ACTIONS.ADD.stationname`, null);
-					this.setState(`ACTIONS.ADD.location`, null);
-					this.setState(`ACTIONS.ADD.country`, null);
-					this.setState(`ACTIONS.ADD.bc_consumption`, null);
-					this.setState(`ACTIONS.ADD.bc_quantity`, null);
-					this.setState(`ACTIONS.ADD.bc_speed`, null);
-					this.setState(`ACTIONS.ADD.position_lat`, null);
-					this.setState(`ACTIONS.ADD.position_long`, null);
+					// reset several userinputs
+					// this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
+					// this.setState(`ACTIONS.ADD.tankId`, 0, true);
+					this.setState(`ACTIONS.ADD.date`, '', true);
+					this.setState(`ACTIONS.ADD.odometer`, 0, true);
+					this.setState(`ACTIONS.ADD.trip`, 0, true);
+					this.setState(`ACTIONS.ADD.quantity`, 0, true);
+					// this.setState(`ACTIONS.ADD.type`, 0, true);
+					this.setState(`ACTIONS.ADD.price`, 0, true);
+					// this.setState(`ACTIONS.ADD.currencyid`, 0, true);
+					// this.setState(`ACTIONS.ADD.pricetype`, 0, true);
+					// this.setState(`ACTIONS.ADD.fuelsortid`, 0, true);
+					// this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
+					this.setState(`ACTIONS.ADD.note`, '', true);
+					this.setState(`ACTIONS.ADD.stationname`, '', true);
+					this.setState(`ACTIONS.ADD.location`, '', true);
+					// this.setState(`ACTIONS.ADD.country`, '', true);
+					this.setState(`ACTIONS.ADD.bc_consumption`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lon`, 0, true);
 
 					await this.getFuelings(vehicleId.val);
 				}
@@ -1714,7 +1925,7 @@ class Spritmonitor extends utils.Adapter {
 					// TODO
 
 					// reset userinput
-					this.setState(`ACTIONS.ADD.ADD_RAW`, null);
+					this.setState(`ACTIONS.ADD.ADD_RAW`, [], true);
 				}
 				*/
 
@@ -1752,10 +1963,10 @@ class Spritmonitor extends utils.Adapter {
 
 					await this.delFueling(vehicleId.val, tankId.val, fuelingId.val);
 
-					// reset all userinputs
-					this.setState(`ACTIONS.DEL.vehicleId`, null);
-					this.setState(`ACTIONS.DEL.tankId`, null);
-					this.setState(`ACTIONS.DEL.fuelingId`, null);
+					// reset userinputs
+					this.setState(`ACTIONS.DEL.vehicleId`, 0, true);
+					this.setState(`ACTIONS.DEL.tankId`, 0, true);
+					this.setState(`ACTIONS.DEL.fuelingId`, 0, true);
 
 					await this.getFuelings(vehicleId.val);
 				}

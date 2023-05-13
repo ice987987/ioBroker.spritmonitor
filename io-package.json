@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "spritmonitor",
-        "version": "0.0.2-beta.2",
+        "version": "0.0.2-beta.4",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -16,18 +16,18 @@
                 "zh-cn": "首次出版",
                 "uk": "початковий випуск"
             },
-            "0.0.2-beta.2": {
-                "en": "possibility to add and delete values added, all tanks added, costsnotes.[year].raw and fuelings.[year].raw added, dependencies updated",
-                "de": "Möglichkeit zum Hinzufügen und Löschen von Werten hinzugefügt, alle Tanks hinzugefügt, costsnotes.[year].raw und fuelings.[year].raw hinzugefügt, Abhängigkeiten aktualisiert",
-                "ru": "добавлена ​​возможность добавлять и удалять значения, добавлены все баки, добавлены costsnotes.[year].raw и fuelings.[year].raw, обновлены зависимости",
-                "pt": "possibilidade de adicionar e excluir valores adicionados, todos os tanques adicionados, notas de costsnotes.[year].raw e fuelings.[year].raw adicionada, dependências atualizadas",
-                "nl": "mogelijkheid om toegevoegde waarden toe te voegen en te verwijderen, alle tanks toegevoegd, costsnotes.[year].raw en fuelings.[year].raw toegevoegd, afhankelijkheden bijgewerkt",
-                "fr": "possibilité d'ajouter et de supprimer des valeurs ajoutées, tous les réservoirs ajoutés, costsnotes.[year].raw et fuelings.[year].raw ajoutés, dépendances mises à jour",
-                "it": "possibilità di aggiungere e cancellare valori aggiunti, aggiunti tutti i serbatoi, costsnotes.[year].raw e fuelings.[year].raw aggiunti, dipendenze aggiornate",
-                "es": "posibilidad de agregar y eliminar valores agregados, todos los tanques agregados, costsnotes.[year].raw y fuelings.[year].raw agregado, dependencias actualizadas",
-                "pl": "możliwość dodawania i usuwania wartości dodanych, wszystkich dodanych zbiorników, notatek costsnotes.[year].raw i fuelings.[year].raw surowiec, zaktualizowano zależności",
-                "uk": "можливість додавати та видаляти додані значення, усі додані танки, примітки про costsnotes.[year].raw і fuelings.[year].raw сирі, оновлено залежності",
-                "zh-cn": "添加和删​​除值的可能性添加，所有坦克添加，costnotes.[year].raw 和 fuelings.[year].raw 添加，依赖更新"
+            "0.0.2-beta.4": {
+                "en": "possibility to add and delete values added, all tanks added, [vehicleID].costsnotes.[year].raw and [vehicleID].fuelings.[year].raw added, .ACTIONS.ADD.attributes and .ACTIONS.ADD.streets added, .general.companies, general.currencies, .general.fuelsorts and .general.quantityunits added, dependencies updated",
+                "de": "Möglichkeit zum Hinzufügen und Löschen von hinzugefügten Werten, allen hinzugefügten Tanks, [Fahrzeug-ID]. Kostennotizen. [Jahr]. hinzugefügt, .allgemeine.Firmen, allgemeine.Währungen, .allgemeine.Kraftstoffsorten und .allgemeine.Mengeneinheiten hinzugefügt, Abhängigkeiten aktualisiert",
+                "ru": "добавлена ​​возможность добавления и удаления значений, добавлены все танки, добавлены [vehicleID].costsnotes.[year].raw и [vehicleID].fuelings.[year].raw, .ACTIONS.ADD.attributes и .ACTIONS.ADD.streets добавлены .general.companies, general.currencies, .general.fuelsorts и .general.quantityunits, обновлены зависимости",
+                "pt": "possibilidade de adicionar e excluir valores adicionados, todos os tanques adicionados, [vehicleID].costsnotes.[year].raw e [vehicleID].fuels.[year].raw adicionado, .ACTIONS.ADD.attributes e .ACTIONS.ADD.streets adicionados, .general.companies, general.currencies, .general.fuelsorts e .general.quantityunits adicionados, dependências atualizadas",
+                "nl": "mogelijkheid om toegevoegde waarden toe te voegen en te verwijderen, alle tanks toegevoegd, [vehicleID].costsnotes.[year].raw en [vehicleID].fuelings.[year].raw toegevoegd, .ACTIONS.ADD.attributes en .ACTIONS.ADD.streets toegevoegd, .general.companies, general.currencies, .general.fuelsorts en .general.quantityunits toegevoegd, afhankelijkheden bijgewerkt",
+                "fr": "possibilité d'ajouter et de supprimer des valeurs ajoutées, tous les réservoirs ajoutés, [vehicleID].costsnotes.[year].raw et [vehicleID].fuelings.[year].raw ajoutés, .ACTIONS.ADD.attributes et .ACTIONS.ADD.streets ajoutés, .general.companies, general.currencies, .general.fuelsorts et .general.quantityunits ajoutés, dépendances mises à jour",
+                "it": "possibilità di aggiungere e cancellare valori aggiunti, tutti i serbatoi aggiunti, [vehicleID].costsnotes.[year].raw e [vehicleID].fuelings.[year].raw aggiunti, .ACTIONS.ADD.attributes e .ACTIONS.ADD.streets aggiunte, aggiunte .general.companies, general.currencies, .general.fuelsorts e .general.quantityunits, dipendenze aggiornate",
+                "es": "posibilidad de agregar y eliminar valores agregados, todos los tanques agregados, [ID del vehículo].costsnotes.[year].raw and [ID del vehículo].fuelings.[year].raw added, .ACTIONS.ADD.attributes and .ACTIONS.ADD.streets agregado, .general.companies, general.currencies, .general.fuelsorts y .general.quantityunits agregado, dependencias actualizadas",
+                "pl": "możliwość dodawania i usuwania dodanych wartości, dodanych wszystkich zbiorników, [IDpojazdu].kosztynotatki.[rok].raw i [IDpojazdu].tankowania.[rok].dodane surowe, .ACTIONS.ADD.atrybuty i .AKCJE.DODAJ.ulice dodane, .general.companies, general.currencies, .general.fuelsorts i .general.quantityunits dodane, zaktualizowane zależności",
+                "uk": "можливість додавати та видаляти додані значення, додані всі танки, [vehicleID].costnotes.[year].raw і [vehicleID].fuelings[year].raw додано, .ACTIONS.ADD.attributes і .ACTIONS.ADD.streets додано, .general.companies, general.currencies, .general.fuelsorts і .general.quantityunits додано, залежності оновлено",
+                "zh-cn": "添加和删​​除值的可能性添加，所有坦克添加，[vehicleID].costsnotes.[year].raw 和 [vehicleID].fuelings.[year].raw 添加，.ACTIONS.ADD.attributes 和 .ACTIONS.ADD.streets添加了 .general.companies、general.currencies、.general.fuelsorts 和 .general.quantityunits，更新了依赖项"
             }
         },
         "titleLang": {
