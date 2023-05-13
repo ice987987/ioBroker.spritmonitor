@@ -9,11 +9,11 @@
 const utils = require('@iobroker/adapter-core');
 
 // Load your modules here, e.g.:
-const axios = require('axios');
+const axios = require('axios').default;
 
 // variables
 const isValidApplicationKey = /[a-zA-Z0-9]{50}/; // format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-const vehicleIDs = [];
+let vehicleIDs = [];
 
 class Spritmonitor extends utils.Adapter {
 	/**
@@ -27,10 +27,6 @@ class Spritmonitor extends utils.Adapter {
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
 		this.on('unload', this.onUnload.bind(this));
-
-		this.requestClient = axios.create();
-
-		this.vehicles = {};
 
 		this.requestInterval = null;
 		this.firstStart = true;
@@ -65,8 +61,7 @@ class Spritmonitor extends utils.Adapter {
 		try {
 			// get all vehicles
 			await this.getVehicles();
-			await this.createObjects(this.vehicles);
-			await this.fillObjectsVehicles(this.vehicles);
+
 			for (let i = 0; i < vehicleIDs.length; i++) {
 				await this.getTanks(vehicleIDs[i]);
 				await this.getFuelings(vehicleIDs[i]);
@@ -82,7 +77,6 @@ class Spritmonitor extends utils.Adapter {
 			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
 			this.requestInterval = setInterval(async () => {
 				await this.getVehicles();
-				await this.fillObjectsVehicles(this.vehicles);
 				for (let i = 0; i < vehicleIDs.length; i++) {
 					await this.getTanks(vehicleIDs[i]);
 					await this.getFuelings(vehicleIDs[i]);
@@ -93,12 +87,11 @@ class Spritmonitor extends utils.Adapter {
 		} catch (error) {
 			this.log.error(`${error} (ERR_#003)`);
 		}
-
 	}
 
 	// https://api.spritmonitor.de/doc
 	async getVehicles() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/vehicles.json',
 			headers: {
@@ -107,11 +100,15 @@ class Spritmonitor extends utils.Adapter {
 				'User-Agent': 'ioBroker Spritmonitor API Access'
 			},
 		})
-			.then((response) => {
+			.then(async (response) => {
 				this.log.debug(`[getVehiclesData]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
-				this.vehicles = response.data;
-
+				if (this.firstStart) {
+					await this.createObjects(response.data);
+					vehicleIDs = response.data.map(d => d.id);
+					this.firstStart = false;
+				}
+				await this.fillObjectsVehicles(response.data);
 			})
 			.catch((error) => {
 				if (error.response) {
@@ -132,7 +129,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getFuelsorts() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/fuelsorts.json',
 			headers: {
@@ -184,7 +181,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getCurrencies() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/currencies.json',
 			headers: {
@@ -236,7 +233,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getQuantityunits() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/quantityunits.json',
 			headers: {
@@ -288,7 +285,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getCompanies() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/companies.json',
 			headers: {
@@ -1358,13 +1355,13 @@ class Spritmonitor extends utils.Adapter {
 			this.setStateAsync(`${vehicles[i].id}.rankingInfo.rank`, { val: vehicles[i].rankingInfo.rank, ack: true });
 			*/
 
-			vehicleIDs.push(vehicles[i].id);
+			//vehicleIDs.push(vehicles[i].id);
 			// this.log.debug(`[fillObjectsVehicles]: ${vehicleIDs}`);
 		}
 	}
 
 	async getTanks(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tanks.json`,
 			headers: {
@@ -1417,7 +1414,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getFuelings(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/fuelings.json?limit=10000`,
 			headers: {
@@ -1488,7 +1485,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getCostsnotes(vehicleId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/costsnotes.json?limit=10000`,
 			headers: {
@@ -1559,7 +1556,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async getReminders() {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/reminders.json`,
 			headers: {
@@ -1595,7 +1592,7 @@ class Spritmonitor extends utils.Adapter {
 	// https://api.spritmonitor.de/v1/vehicle/123456/tank/1/fueling.json?date=15.01.2019&odometer=45123&trip=652.4&quantity=45.4&type=full&price=89.4&currencyid=0&pricetype=0&fuelsortid=7&quantityunitid=1&note=My%20note%20for%20this%20fueling&stationname=Shell&location=Moosacher%20Strasse&country=D&bc_consumption=7.2&bc_quantity=53.4&bc_speed=53.4&position=48.137154%2C11.576124
 
 	async addFueling(vehicleId, tankId, val) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling.json?${val}`,
 			headers: {
@@ -1626,7 +1623,7 @@ class Spritmonitor extends utils.Adapter {
 	}
 
 	async delFueling(vehicleId, tankId, fuelingId) {
-		await this.requestClient({
+		await axios({
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling/${fuelingId}.delete`,
 			headers: {
@@ -1722,7 +1719,6 @@ class Spritmonitor extends utils.Adapter {
 
 				if (command === 'UPDATE' && state.val) {
 					await this.getVehicles();
-					await this.fillObjectsVehicles(this.vehicles);
 
 					for (let i = 0; i < vehicleIDs.length; i++) {
 						await this.getTanks(vehicleIDs[i]);
