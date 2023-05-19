@@ -120,7 +120,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.4
+### 0.0.2-beta.5
 
 -   (ice987987) possibility to add and delete values added
 -   (ice987987) all tanks added
@@ -128,6 +128,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   (ice987987) `.ACTIONS.ADD.attributes` and `.ACTIONS.ADD.streets` added
 -   (ice987987) `.general.companies`, `general.currencies`, `.general.fuelsorts` and `.general.quantityunits` added
 -   (ice987987) dependencies updated
+-   (ice987987) gui validator replaced
 
 ### 0.0.1 (26.11.2022)
 
