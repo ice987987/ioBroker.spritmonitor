@@ -120,7 +120,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.5
+### 0.0.2-beta.6
 
 -   (ice987987) possibility to add and delete values added
 -   (ice987987) all tanks added
