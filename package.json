@@ -1,6 +1,6 @@
 {
   "name": "iobroker.spritmonitor",
-  "version": "0.0.2-beta.5",
+  "version": "0.0.2-beta.6",
   "description": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
   "author": {
     "name": "ice987987",
@@ -38,7 +38,7 @@
     "@types/sinon-chai": "^3.2.9",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.40.0",
+    "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.2.0",

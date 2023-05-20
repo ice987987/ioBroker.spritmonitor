@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "spritmonitor",
-        "version": "0.0.2-beta.5",
+        "version": "0.0.2-beta.6",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -16,7 +16,7 @@
                 "zh-cn": "首次出版",
                 "uk": "початковий випуск"
             },
-            "0.0.2-beta.5": {
+            "0.0.2-beta.6": {
                 "en": "possibility to add and delete values added, all tanks added, [vehicleID].costsnotes.[year].raw and [vehicleID].fuelings.[year].raw added, .ACTIONS.ADD.attributes and .ACTIONS.ADD.streets added, .general.companies, general.currencies, .general.fuelsorts and .general.quantityunits added, dependencies updated, gui validator replaced",
                 "de": "Möglichkeit zum Hinzufügen und Löschen hinzugefügter Werte, aller hinzugefügten Tanks, [vehicleID].costsnotes.[year].raw und [vehicleID].fuelings.[year].raw hinzugefügt, .ACTIONS.ADD.attributes und .ACTIONS.ADD.streets hinzugefügt, .general.companies, general.currencies, .general.fuelsorts und .general.quantityunits hinzugefügt, Abhängigkeiten aktualisiert, GUI-Validator ersetzt",
                 "ru": "добавлена ​​возможность добавления и удаления значений, добавлены все танки, добавлены [vehicleID].costsnotes.[year].raw и [vehicleID].fuelings.[year].raw, .ACTIONS.ADD.attributes и .ACTIONS.ADD.streets добавлены .general.companies, general.currencies, .general.fuelsorts и .general.quantityunits, обновлены зависимости, заменен валидатор графического интерфейса",
