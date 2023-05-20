@@ -99,9 +99,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   `.[vehicleID].tanks.[tankID].quantitysum`: Amount of tanked fuel for this tank (for consumption calculation)
 -   `.[vehicleID].tanks.[tankID].quantitysumunit`: Unit for tanked fuel (l, GAL, kg, kWh, ...)
 -   `.[vehicleID].fuelings.raw`: A JSON array of fuelings
--   `.[vehicleID].fuelings.[year].raw`: A JSON array of fuelings per year
 -   `.[vehicleID].costsnotes.raw`: A JSON array of costs / notes
--   `.[vehicleID].costsnotes.[year].raw`: A JSON array of costs / notes per year
 -   `.reminders.raw`: A JSON array of reminders
 -   `.general.companies`: List of supported companies, IDs and names
 -   `.general.currencies`: List of supported currencies, IDs and names
@@ -120,8 +118,9 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.6
+### 0.0.2-beta.7
 
+-   (ice987987) BREAKING: `.[vehicleID].fuelings.[year].raw` and `.[vehicleID].costsnotes.[year].raw` removed
 -   (ice987987) possibility to add and delete values added
 -   (ice987987) all tanks added
 -   (ice987987) `[vehicleID].costsnotes.[year].raw` and `[vehicleID].fuelings.[year].raw` added

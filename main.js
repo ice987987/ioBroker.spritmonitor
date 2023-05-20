@@ -1165,7 +1165,7 @@ class Spritmonitor extends utils.Adapter {
 				def: 0,
 				role: 'state',
 				min: 0,
-				max: 1,
+				max: 2,
 				read: true,
 				write: true,
 			},
@@ -1449,18 +1449,6 @@ class Spritmonitor extends utils.Adapter {
 			native: {},
 		});
 
-		await this.setObjectNotExistsAsync(`ACTIONS.ADD.ADD_RAW`, {
-			type: 'state',
-			common: {
-				name: 'Add new fueling for given tank of given vehicle (Object with a string)',
-				type: 'string',
-				role: 'state',
-				read: true,
-				write: true,
-			},
-			native: {},
-		});
-
 		// create channel "DEL"
 		await this.setObjectNotExistsAsync(`ACTIONS.DEL`, {
 			type: 'channel',
@@ -1500,7 +1488,7 @@ class Spritmonitor extends utils.Adapter {
 				type: 'number',
 				role: 'state',
 				min: 0,
-				max: 1,
+				max: 2,
 				read: true,
 				write: true,
 			},
@@ -1829,6 +1817,7 @@ class Spritmonitor extends utils.Adapter {
 
 					await this.addFueling(vehicleId.val, tankId.val, APIstring);
 
+					/*
 					// reset several userinputs
 					// this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
 					// this.setState(`ACTIONS.ADD.tankId`, 0, true);
@@ -1850,22 +1839,11 @@ class Spritmonitor extends utils.Adapter {
 					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
 					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
 					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
-					this.setState(`ACTIONS.ADD.position_lon`, 0, true);
+					await this.setStateAsync(`ACTIONS.ADD.position_lon`, 0, true);
+					*/
 
 					await this.getFuelings(vehicleId.val);
 				}
-
-				/*
-				if (command === 'ADD_RAW' && state.val) {
-
-					let APIstring = '';
-
-					// TODO
-
-					// reset userinput
-					this.setState(`ACTIONS.ADD.ADD_RAW`, [], true);
-				}
-				*/
 
 				if (command === 'DEL' && state.val) {
 					const vehicleId = await this.getStateAsync(`ACTIONS.DEL.vehicleId`);
