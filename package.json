@@ -1,6 +1,6 @@
 {
   "name": "iobroker.spritmonitor",
-  "version": "0.0.2-beta.7",
+  "version": "0.0.2-beta.8",
   "description": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
   "author": {
     "name": "ice987987",
@@ -19,7 +19,7 @@
     "url": "https://github.com/ice987987/ioBroker.spritmonitor.git"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 16"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.8",
