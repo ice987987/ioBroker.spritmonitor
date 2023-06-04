@@ -110,6 +110,7 @@ class Spritmonitor extends utils.Adapter {
 				if (this.firstStart) {
 					await this.createObjectsVehicles(response.data);
 					vehicleIDs = response.data.map(d => d.id);
+					this.log.debug(`[getVehiclesData]: vehicleIDs: ${vehicleIDs}`);
 				}
 				await this.fillObjectsVehicles(response.data);
 			})
@@ -1147,7 +1148,7 @@ class Spritmonitor extends utils.Adapter {
 		await this.setObjectNotExistsAsync(`ACTIONS.ADD.vehicleId`, {
 			type: 'state',
 			common: {
-				name: 'Numeric ID of the vehicle to get fuelings for',
+				name: 'Numeric ID of the vehicle to add fuelings for',
 				type: 'number',
 				def: 0,
 				role: 'state',
@@ -1160,11 +1161,11 @@ class Spritmonitor extends utils.Adapter {
 		await this.setObjectNotExistsAsync(`ACTIONS.ADD.tankId`, {
 			type: 'state',
 			common: {
-				name: 'Numeric ID of the tank to get fuelings for',
+				name: 'Numeric ID of the tank to add fuelings for',
 				type: 'number',
-				def: 0,
+				def: 1,
 				role: 'state',
-				min: 0,
+				min: 1,
 				max: 2,
 				read: true,
 				write: true,
@@ -1487,7 +1488,7 @@ class Spritmonitor extends utils.Adapter {
 				name: 'Numeric ID of the tank to delete fueling for',
 				type: 'number',
 				role: 'state',
-				min: 0,
+				min: 1,
 				max: 2,
 				read: true,
 				write: true,
@@ -1526,6 +1527,31 @@ class Spritmonitor extends utils.Adapter {
 				this.log.debug(`[addFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 				if (response.data.errors) {
 					this.log.info(`[addFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING SET.`);
+				} else {
+					// reset several userinputs
+					this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
+					// this.setState(`ACTIONS.ADD.tankId`, 0, true);
+					this.setState(`ACTIONS.ADD.date`, '', true);
+					this.setState(`ACTIONS.ADD.odometer`, 0, true);
+					this.setState(`ACTIONS.ADD.trip`, 0, true);
+					this.setState(`ACTIONS.ADD.quantity`, 0, true);
+					// this.setState(`ACTIONS.ADD.type`, 0, true);
+					this.setState(`ACTIONS.ADD.price`, 0, true);
+					// this.setState(`ACTIONS.ADD.currencyid`, 0, true);
+					// this.setState(`ACTIONS.ADD.pricetype`, 0, true);
+					// this.setState(`ACTIONS.ADD.fuelsortid`, 0, true);
+					// this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
+					this.setState(`ACTIONS.ADD.note`, '', true);
+					this.setState(`ACTIONS.ADD.stationname`, '', true);
+					this.setState(`ACTIONS.ADD.location`, '', true);
+					// this.setState(`ACTIONS.ADD.country`, '', true);
+					this.setState(`ACTIONS.ADD.bc_consumption`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
+					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
+					this.setState(`ACTIONS.ADD.position_lon`, 0, true);
+					// this.setState(`ACTIONS.ADD.attributes`, '', true);
+					// this.setState(`ACTIONS.ADD.streets`, '', true);
 				}
 			})
 			.catch((error) => {
@@ -1557,6 +1583,11 @@ class Spritmonitor extends utils.Adapter {
 				this.log.debug(`[delFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 				if (response.data.errors) {
 					this.log.info(`[delFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING DELETED.`);
+				} else {
+					// reset several userinputs
+					this.setState(`ACTIONS.DEL.vehicleId`, 0, true);
+					// this.setState(`ACTIONS.DEL.tankId`, 0, true);
+					this.setState(`ACTIONS.DEL.fuelingId`, 0, true);
 				}
 			})
 			.catch((error) => {
@@ -1816,32 +1847,6 @@ class Spritmonitor extends utils.Adapter {
 					this.log.debug(`[onStateChange]: APIstring ${APIstring}`);
 
 					await this.addFueling(vehicleId.val, tankId.val, APIstring);
-
-					/*
-					// reset several userinputs
-					// this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
-					// this.setState(`ACTIONS.ADD.tankId`, 0, true);
-					this.setState(`ACTIONS.ADD.date`, '', true);
-					this.setState(`ACTIONS.ADD.odometer`, 0, true);
-					this.setState(`ACTIONS.ADD.trip`, 0, true);
-					this.setState(`ACTIONS.ADD.quantity`, 0, true);
-					// this.setState(`ACTIONS.ADD.type`, 0, true);
-					this.setState(`ACTIONS.ADD.price`, 0, true);
-					// this.setState(`ACTIONS.ADD.currencyid`, 0, true);
-					// this.setState(`ACTIONS.ADD.pricetype`, 0, true);
-					// this.setState(`ACTIONS.ADD.fuelsortid`, 0, true);
-					// this.setState(`ACTIONS.ADD.quantityunitid`, 0, true);
-					this.setState(`ACTIONS.ADD.note`, '', true);
-					this.setState(`ACTIONS.ADD.stationname`, '', true);
-					this.setState(`ACTIONS.ADD.location`, '', true);
-					// this.setState(`ACTIONS.ADD.country`, '', true);
-					this.setState(`ACTIONS.ADD.bc_consumption`, 0, true);
-					this.setState(`ACTIONS.ADD.bc_quantity`, 0, true);
-					this.setState(`ACTIONS.ADD.bc_speed`, 0, true);
-					this.setState(`ACTIONS.ADD.position_lat`, 0, true);
-					await this.setStateAsync(`ACTIONS.ADD.position_lon`, 0, true);
-					*/
-
 					await this.getFuelings(vehicleId.val);
 				}
 
@@ -1878,12 +1883,6 @@ class Spritmonitor extends utils.Adapter {
 					}
 
 					await this.delFueling(vehicleId.val, tankId.val, fuelingId.val);
-
-					// reset userinputs
-					this.setState(`ACTIONS.DEL.vehicleId`, 0, true);
-					this.setState(`ACTIONS.DEL.tankId`, 0, true);
-					this.setState(`ACTIONS.DEL.fuelingId`, 0, true);
-
 					await this.getFuelings(vehicleId.val);
 				}
 

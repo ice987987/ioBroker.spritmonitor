@@ -1,6 +1,6 @@
 {
   "name": "iobroker.spritmonitor",
-  "version": "0.0.2-beta.8",
+  "version": "0.0.2-beta.9",
   "description": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
   "author": {
     "name": "ice987987",
@@ -19,7 +19,7 @@
     "url": "https://github.com/ice987987/ioBroker.spritmonitor.git"
   },
   "engines": {
-    "node": ">= 16"
+    "node": ">= 16.4"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.8",
@@ -38,7 +38,7 @@
     "@types/sinon-chai": "^3.2.9",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.41.0",
+    "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.2.0",
@@ -46,7 +46,7 @@
     "proxyquire": "^2.1.3",
     "sinon": "^15.1.0",
     "sinon-chai": "^3.7.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.3"
   },
   "main": "main.js",
   "files": [
