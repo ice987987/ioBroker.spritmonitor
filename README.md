@@ -118,7 +118,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.9
+### 0.0.2-beta.10
 
 -   (ice987987) BREAKING: node.js >= v16.4, js-controller >= v4.0.24 and admin >= v6.3.5 is required
 -   (ice987987) BREAKING: `.[vehicleID].fuelings.[year].raw` and `.[vehicleID].costsnotes.[year].raw` removed
@@ -128,6 +128,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 -   (ice987987) `.ACTIONS.ADD.attributes` and `.ACTIONS.ADD.streets` added
 -   (ice987987) `.general.companies`, `general.currencies`, `.general.fuelsorts` and `.general.quantityunits` added
 -   (ice987987) gui validator replaced
+-   (ice987987) warning messages improved
 -   (ice987987) dependencies updated
 
 ### 0.0.1 (26.11.2022)

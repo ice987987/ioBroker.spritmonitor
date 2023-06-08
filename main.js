@@ -1526,7 +1526,7 @@ class Spritmonitor extends utils.Adapter {
 			.then(async (response) => {
 				this.log.debug(`[addFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 				if (response.data.errors) {
-					this.log.info(`[addFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING SET.`);
+					this.log.warn(`[addFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING SET.`);
 				} else {
 					// reset several userinputs
 					this.setState(`ACTIONS.ADD.vehicleId`, 0, true);
