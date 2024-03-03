@@ -118,7 +118,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.2-beta.10
+### 0.0.2 (03.03.2024)
 
 -   (ice987987) BREAKING: node.js >= v16.4, js-controller >= v4.0.24 and admin >= v6.3.5 is required
 -   (ice987987) BREAKING: `.[vehicleID].fuelings.[year].raw` and `.[vehicleID].costsnotes.[year].raw` removed
@@ -139,7 +139,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 MIT License
 
-Copyright (c) 2023 ice987987 <mathias.frei1@gmail.com>
+Copyright (c) 2024 ice987987 <mathias.frei1@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

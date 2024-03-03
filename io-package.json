@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "spritmonitor",
-        "version": "0.0.2-beta.10",
+        "version": "0.0.2",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -16,7 +16,7 @@
                 "zh-cn": "首次出版",
                 "uk": "початковий випуск"
             },
-            "0.0.2-beta.10": {
+            "0.0.2": {
                 "en": "BREAKING: node.js >= v16.4, js-controller >= v4.0.24 and admin >= v6.3.5 is required, BREAKING: .[vehicleID].fuelings.[year].raw and .[vehicleID].costsnotes.[year].raw removed, possibility to add and delete values added, all tanks added, [vehicleID].costsnotes.[year].raw and [vehicleID].fuelings.[year].raw added, .ACTIONS.ADD.attributes and .ACTIONS.ADD.streets added, .general.companies, general.currencies, .general.fuelsorts and .general.quantityunits added, gui validator replaced, warning messages improved, dependencies updated",
                 "de": "BREAKING: node.js >= v16.4, js-controller >= v4.0.24 und admin >= v6.3.5 sind erforderlich, BREAKING: .[vehicleID].fuelings.[year].raw und .[vehicleID].costsnotes .[year].raw entfernt, Möglichkeit zum Hinzufügen und Löschen von Werten hinzugefügt, alle Tanks hinzugefügt, [vehicleID].costsnotes.[year].raw und [vehicleID].fuelings.[year].raw hinzugefügt, .ACTIONS.ADD. Attribute und .ACTIONS.ADD.streets hinzugefügt, .general.companies, general.currencies, .general.fuelsorts und .general.quantityunits hinzugefügt, GUI-Validator ersetzt, Warnmeldungen verbessert, Abhängigkeiten aktualisiert",
                 "ru": "НАРУШЕНИЕ: требуется node.js >= v16.4, js-controller >= v4.0.24 и admin >= v6.3.5, НАРУШЕНИЕ: .[vehicleID].fuelings.[year].raw и .[vehicleID].costsnotes Удален .[year].raw, добавлена ​​возможность добавлять и удалять значения, добавлены все танки, [vehicleID].costsnotes.[year].raw и [vehicleID].fuelings.[year].raw добавлены, .ACTIONS.ADD. добавлены атрибуты и .ACTIONS.ADD.streets, добавлены .general.companies, general.currencies, .general.fuelsorts и .general.quantityunits, заменен валидатор графического интерфейса, улучшены предупреждающие сообщения, обновлены зависимости",
