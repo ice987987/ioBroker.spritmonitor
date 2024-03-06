@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "spritmonitor",
-        "version": "0.0.2",
+        "version": "0.0.3-beta.1",
         "news": {
             "0.0.1": {
                 "en": "initial release",
@@ -28,6 +28,19 @@
                 "pl": "BREAKING: wymagany jest node.js >= v16.4, js-controller >= v4.0.24 i admin >= v6.3.5, BREAKING: .[vehicleID].fuelings.[year].raw i .[vehicleID].costsnotes .[rok].raw usunięto, dodano możliwość dodawania i usuwania wartości, dodano wszystkie zbiorniki, [ID pojazdu].notatki kosztów.[rok].raw i [ID pojazdu].tankowania.[rok].dodano surowe, .ACTIONS.ADD. dodane atrybuty i .ACTIONS.ADD.streets, dodane .general.companies, general.currencies, .general.fuelsorts i .general.quantityunits, zastąpiony walidator GUI, poprawione komunikaty ostrzegawcze, zaktualizowane zależności",
                 "uk": "ПОЛИМАННЯ: потрібні node.js >= v16.4, js-controller >= v4.0.24 і admin >= v6.3.5, ПОРУШЕННЯ: .[vehicleID].fuelings.[year].raw і [vehicleID].costnotes [рік].raw видалено, додано можливість додавати та видаляти значення, додано всі танки, [vehicleID].costnotes.[year].raw і [vehicleID].fuelings.[year].raw додано, .ACTIONS.ADD. додано атрибути та .ACTIONS.ADD.вулиці, додано .general.companies, general.currencies, .general.fuelsorts та .general.quantityunits, валідатор графічного інтерфейсу замінено, попередження покращено, залежності оновлено",
                 "zh-cn": "中断：需要 node.js >= v16.4，js-controller >= v4.0.24 和 admin >= v6.3.5，中断：.[vehicleID].fuelings.[year].raw 和 .[vehicleID].costsnotes .[year].raw 删除，添加和删除值的可能性，添加所有坦克，[vehicleID].costsnotes.[year].raw 和 [vehicleID].fuelings.[year].raw 添加，.ACTIONS.ADD。添加了属性和 .ACTIONS.ADD.streets，添加了 .general.companies、general.currencies、.general.fuelsorts 和 .general.quantityunits，更换了 gui 验证器，改进了警告消息，更新了依赖项"
+            },
+            "0.0.3-beta.1": {
+                "en": ".ACTIONS.ADD.percent added, dependencies updated",
+                "de": ".ACTIONS.ADD.percent hinzugefügt, Abhängigkeiten aktualisiert",
+                "ru": "Добавлен .ACTIONS.ADD.percent, обновлены зависимости.",
+                "pt": ".ACTIONS.ADD.percent adicionado, dependências atualizadas",
+                "nl": ".ACTIONS.ADD.percent toegevoegd, afhankelijkheden bijgewerkt",
+                "fr": ".ACTIONS.ADD.percent ajouté, dépendances mises à jour",
+                "it": ".ACTIONS.ADD.percent aggiunto, dipendenze aggiornate",
+                "es": ".ACTIONS.ADD.percent agregado, dependencias actualizadas",
+                "pl": "Dodano .ACTIONS.ADD.percent, zaktualizowano zależności",
+                "uk": ".ACTIONS.ADD.percent додано, залежності оновлено",
+                "zh-cn": "添加了.ACTIONS.ADD.percent，更新了依赖项"
             }
         },
         "titleLang": {

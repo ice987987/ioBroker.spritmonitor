@@ -9,7 +9,7 @@
 const utils = require('@iobroker/adapter-core');
 
 // Load your modules here, e.g.:
-const axios = require('axios').default;
+const axios = require('axios');
 
 // variables
 const isValidApplicationKey = /[a-zA-Z0-9]{50}/; // format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -50,9 +50,7 @@ class Spritmonitor extends utils.Adapter {
 		}
 		// check requestInterval
 		if (!this.numberInRange(6, 168, this.config.requestInterval)) {
-			this.log.error(
-				'"Time interval to retrieve values" is not valid (6 <= t <= 168 hours) (ERR_#002)',
-			);
+			this.log.error('"Time interval to retrieve values" is not valid (6 <= t <= 168 hours) (ERR_#002)');
 			return;
 		}
 
@@ -1449,6 +1447,20 @@ class Spritmonitor extends utils.Adapter {
 			},
 			native: {},
 		});
+		await this.setObjectNotExistsAsync(`ACTIONS.ADD.percent`, {
+			type: 'state',
+			common: {
+				name: 'Charge level of electric vehicle after charging',
+				type: 'number',
+				def: 0,
+				role: 'state',
+				min: 0,
+				max: 100,
+				read: true,
+				write: true,
+			},
+			native: {},
+		});
 
 		// create channel "DEL"
 		await this.setObjectNotExistsAsync(`ACTIONS.DEL`, {
@@ -1552,6 +1564,7 @@ class Spritmonitor extends utils.Adapter {
 					this.setState(`ACTIONS.ADD.position_lon`, 0, true);
 					// this.setState(`ACTIONS.ADD.attributes`, '', true);
 					// this.setState(`ACTIONS.ADD.streets`, '', true);
+					this.setState(`ACTIONS.ADD.percent`, 0, true);
 				}
 			})
 			.catch((error) => {
@@ -1642,7 +1655,6 @@ class Spritmonitor extends utils.Adapter {
 		try {
 			// Here you must clear all timeouts or intervals that may still be active
 			this.requestInterval && clearInterval(this.requestInterval);
-
 			callback();
 		} catch (e) {
 			callback();
@@ -1843,6 +1855,13 @@ class Spritmonitor extends utils.Adapter {
 							this.log.info(`[onStateChange]: streets not valid. Value not added.`);
 						}
 					}
+					const percent = await this.getStateAsync(`ACTIONS.ADD.percent`);
+					if (percent && this.numberInRange(1, 100, percent.val)) {
+						APIstring += `&percent=${percent.val}`;
+					} else {
+						this.log.info(`[onStateChange]: percent not valid. NOTHING SET.`);
+						return;
+					}
 
 					this.log.debug(`[onStateChange]: APIstring ${APIstring}`);
 
@@ -1888,9 +1907,7 @@ class Spritmonitor extends utils.Adapter {
 
 			} else {
 				// The state was changed by system
-				this.log.debug(
-					`[onStateChange]: state ${id} changed: ${state.val} (ack = ${state.ack}). NO ACTION PERFORMED.`,
-				);
+				this.log.debug(`[onStateChange]: state ${id} changed: ${state.val} (ack = ${state.ack}). NO ACTION PERFORMED.`);
 			}
 		} else {
 			// The state was deleted
