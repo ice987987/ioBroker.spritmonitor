@@ -29,18 +29,8 @@
                 "uk": "ПОЛИМАННЯ: потрібні node.js >= v16.4, js-controller >= v4.0.24 і admin >= v6.3.5, ПОРУШЕННЯ: .[vehicleID].fuelings.[year].raw і [vehicleID].costnotes [рік].raw видалено, додано можливість додавати та видаляти значення, додано всі танки, [vehicleID].costnotes.[year].raw і [vehicleID].fuelings.[year].raw додано, .ACTIONS.ADD. додано атрибути та .ACTIONS.ADD.вулиці, додано .general.companies, general.currencies, .general.fuelsorts та .general.quantityunits, валідатор графічного інтерфейсу замінено, попередження покращено, залежності оновлено",
                 "zh-cn": "中断：需要 node.js >= v16.4，js-controller >= v4.0.24 和 admin >= v6.3.5，中断：.[vehicleID].fuelings.[year].raw 和 .[vehicleID].costsnotes .[year].raw 删除，添加和删除值的可能性，添加所有坦克，[vehicleID].costsnotes.[year].raw 和 [vehicleID].fuelings.[year].raw 添加，.ACTIONS.ADD。添加了属性和 .ACTIONS.ADD.streets，添加了 .general.companies、general.currencies、.general.fuelsorts 和 .general.quantityunits，更换了 gui 验证器，改进了警告消息，更新了依赖项"
             },
-            "0.0.3-beta.1": {
-                "en": ".ACTIONS.ADD.percent added, dependencies updated",
-                "de": ".ACTIONS.ADD.percent hinzugefügt, Abhängigkeiten aktualisiert",
-                "ru": "Добавлен .ACTIONS.ADD.percent, обновлены зависимости.",
-                "pt": ".ACTIONS.ADD.percent adicionado, dependências atualizadas",
-                "nl": ".ACTIONS.ADD.percent toegevoegd, afhankelijkheden bijgewerkt",
-                "fr": ".ACTIONS.ADD.percent ajouté, dépendances mises à jour",
-                "it": ".ACTIONS.ADD.percent aggiunto, dipendenze aggiornate",
-                "es": ".ACTIONS.ADD.percent agregado, dependencias actualizadas",
-                "pl": "Dodano .ACTIONS.ADD.percent, zaktualizowano zależności",
-                "uk": ".ACTIONS.ADD.percent додано, залежності оновлено",
-                "zh-cn": "添加了.ACTIONS.ADD.percent，更新了依赖项"
+            "0.0.3-beta.2": {
+                "en": "BREAKING: node.js >= v18, js-controller >= v5 is required, .ACTIONS.ADD.percent added, dependencies updated"
             }
         },
         "titleLang": {
@@ -78,7 +68,10 @@
             "gas",
             "diesel"
         ],
-        "license": "MIT",
+        "licenseInformation": {
+            "type": "free",
+            "license": "MIT"
+        },
         "platform": "Javascript/Node.js",
         "main": "main.js",
         "icon": "spritmonitor.svg",
@@ -86,6 +79,7 @@
         "extIcon": "https://raw.githubusercontent.com/ice987987/ioBroker.spritmonitor/main/admin/spritmonitor.svg",
         "readme": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md",
         "loglevel": "info",
+        "tier": 3,
         "mode": "daemon",
         "type": "vehicle",
         "compact": true,
@@ -96,12 +90,12 @@
         },
         "dependencies": [
             {
-                "js-controller": ">=4.0.24"
+                "js-controller": ">= 5"
             }
         ],
         "globalDependencies": [
             {
-                "admin": ">=6.3.5"
+                "admin": ">= 6.3.5"
             }
         ]
     },
