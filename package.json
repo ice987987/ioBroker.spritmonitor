@@ -1,6 +1,6 @@
 {
   "name": "iobroker.spritmonitor",
-  "version": "0.0.3-beta.1",
+  "version": "0.0.3-beta.2",
   "description": "This adapter allows you to manage your fuel consumption via spritmonitor.de.",
   "author": {
     "name": "ice987987",
