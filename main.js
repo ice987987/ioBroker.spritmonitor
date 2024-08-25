@@ -1656,7 +1656,7 @@ class Spritmonitor extends utils.Adapter {
 			// Here you must clear all timeouts or intervals that may still be active
 			this.requestInterval && clearInterval(this.requestInterval);
 			callback();
-		} catch (e) {
+		} catch {
 			callback();
 		}
 	}
@@ -1833,7 +1833,7 @@ class Spritmonitor extends utils.Adapter {
 					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
 					if (attributes && attributes.val) {
 						// remove dublicates
-						let attributesMod = attributes.val.split(',');
+						let attributesMod = String(attributes.val).split(',');
 						attributesMod = attributesMod.filter((item, index) => attributesMod.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: attributesMod: ${attributesMod}`);
 						if (attributesMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
@@ -1845,7 +1845,7 @@ class Spritmonitor extends utils.Adapter {
 					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
 					if (streets && streets.val) {
 						// remove dublicates
-						let streetsMod = streets.val.split(',');
+						let streetsMod = String(streets.val).split(',');
 						streetsMod = streetsMod.filter((item, index) => streetsMod.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
 						// check if only allowed elements
