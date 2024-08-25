@@ -83,7 +83,6 @@
             "license": "MIT"
         },
         "platform": "Javascript/Node.js",
-        "main": "main.js",
         "icon": "spritmonitor.svg",
         "enabled": true,
         "extIcon": "https://raw.githubusercontent.com/ice987987/ioBroker.spritmonitor/main/admin/spritmonitor.svg",
