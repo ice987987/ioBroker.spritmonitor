@@ -14,7 +14,8 @@
 			"xs": 12,
 			"sm": 12,
 			"md": 8,
-			"lg": 8
+			"lg": 8,
+			"xl": 8
 		},
 		"requestInterval": {
 			"newLine": true,
@@ -29,16 +30,13 @@
 			"xs": 12,
 			"sm": 12,
 			"md": 8,
-			"lg": 8
+			"lg": 8,
+			"xl": 8
 		},
 		"_divider": {
 			"newLine": true,
 			"type": "divider",
-			"color": "primary",
-			"xs": 12,
-			"sm": 12,
-			"md": 8,
-			"lg": 8
+			"color": "primary"
 		},
 		"_helpLink": {
 			"newLine": true,
@@ -48,7 +46,12 @@
 			"variant": "contained",
 			"color": "primary",
 			"button": true,
-			"href": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md"
+			"href": "https://github.com/ice987987/ioBroker.spritmonitor/blob/main/README.md",
+			"xs": 12,
+			"sm": 12,
+			"md": 8,
+			"lg": 8,
+			"xl": 8
 		}
 	}
 }

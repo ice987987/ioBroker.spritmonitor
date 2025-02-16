@@ -120,10 +120,11 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 <!-- ### **WORK IN PROGRESS** -->
 
-### 0.0.3-beta.2
+### 0.0.3 (16.02.2025)
 
 -   (ice987987) BREAKING: node.js >= v18, js-controller >= v5.0.19 is required
 -   (ice987987) `.ACTIONS.ADD.percent` added
+-   (ice987978) log outputs for not successfull added values are now considered as "warn" instead of "info"
 -   (ice987987) dependencies updated
 
 ### 0.0.2 (03.03.2024)
@@ -147,7 +148,7 @@ All product and company names or logos are trademarks™ or registered® tradema
 
 MIT License
 
-Copyright (c) 2024 ice987987 <mathias.frei1@gmail.com>
+Copyright (c) 2025 ice987987 <mathias.frei1@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -77,15 +77,18 @@ class Spritmonitor extends utils.Adapter {
 			this.firstStart = false;
 
 			this.log.info(`Starting polltimer with a ${this.config.requestInterval}h interval.`);
-			this.requestInterval = setInterval(async () => {
-				await this.getVehicles();
-				for (let i = 0; i < vehicleIDs.length; i++) {
-					await this.getTanks(vehicleIDs[i]);
-					await this.getFuelings(vehicleIDs[i]);
-					await this.getCostsnotes(vehicleIDs[i]);
-				}
-				await this.getReminders();
-			}, this.config.requestInterval * 60 * 60 * 1000); // 1h = 3600000ms
+			this.requestInterval = setInterval(
+				async () => {
+					await this.getVehicles();
+					for (let i = 0; i < vehicleIDs.length; i++) {
+						await this.getTanks(vehicleIDs[i]);
+						await this.getFuelings(vehicleIDs[i]);
+						await this.getCostsnotes(vehicleIDs[i]);
+					}
+					await this.getReminders();
+				},
+				this.config.requestInterval * 60 * 60 * 1000,
+			); // 1h = 3600000ms
 		} catch (error) {
 			this.log.error(`${error} (ERR_#003)`);
 		}
@@ -97,12 +100,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/vehicles.json',
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getVehiclesData]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				if (this.firstStart) {
@@ -112,7 +115,7 @@ class Spritmonitor extends utils.Adapter {
 				}
 				await this.fillObjectsVehicles(response.data);
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getVehiclesData]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -137,7 +140,7 @@ class Spritmonitor extends utils.Adapter {
 			await this.setObjectNotExistsAsync(vehicles[i].id.toString(), {
 				type: 'device',
 				common: {
-					name: `${vehicles[i].make}${vehicles[i].model ? ' ' + vehicles[i].model : ''}`
+					name: `${vehicles[i].make}${vehicles[i].model ? ` ${vehicles[i].model}` : ''}`,
 				},
 				native: {},
 			});
@@ -253,7 +256,7 @@ class Spritmonitor extends utils.Adapter {
 						4: 'CNG',
 						5: 'Electricity',
 						6: 'AdBlue',
-						7: 'Hydrogen'
+						7: 'Hydrogen',
 					},
 					min: 1,
 					max: 7,
@@ -417,12 +420,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tanks.json`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getTanks]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				if (this.firstStart) {
@@ -431,7 +434,7 @@ class Spritmonitor extends utils.Adapter {
 
 				await this.fillObjectsTanks(vehicleId, response.data);
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getTanks]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -489,7 +492,7 @@ class Spritmonitor extends utils.Adapter {
 						4: 'CNG',
 						5: 'Electricity',
 						6: 'AdBlue',
-						7: 'Hydrogen'
+						7: 'Hydrogen',
 					},
 					min: 1,
 					max: 7,
@@ -507,7 +510,7 @@ class Spritmonitor extends utils.Adapter {
 					states: {
 						1: 'Volume',
 						2: 'Weight (for CNG)',
-						3: 'Electricity'
+						3: 'Electricity',
 					},
 					min: 1,
 					max: 3,
@@ -565,7 +568,7 @@ class Spritmonitor extends utils.Adapter {
 						7: 'mi/kg',
 						8: 'km/kWh',
 						9: 'kWh/100km',
-						10: 'mi/kWh'
+						10: 'mi/kWh',
 					},
 					min: 1,
 					max: 10,
@@ -717,12 +720,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/fuelings.json?limit=10000`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getFuelings]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				if (this.firstStart) {
@@ -731,7 +734,7 @@ class Spritmonitor extends utils.Adapter {
 
 				await this.fillObjectsFuelings(vehicleId, response.data);
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getFuelings]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -778,12 +781,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/costsnotes.json?limit=10000`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getCostnotes]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				if (this.firstStart) {
@@ -792,7 +795,7 @@ class Spritmonitor extends utils.Adapter {
 
 				await this.fillObjectsCostsnotes(vehicleId, response.data);
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getCostnotes]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -839,12 +842,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/reminders.json`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getReminders]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				if (this.firstStart) {
@@ -853,7 +856,7 @@ class Spritmonitor extends utils.Adapter {
 
 				await this.fillObjectsReminders(response.data);
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getReminders]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -900,12 +903,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/fuelsorts.json',
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getFuelsorts]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.setObjectNotExistsAsync('general', {
@@ -929,7 +932,7 @@ class Spritmonitor extends utils.Adapter {
 
 				this.setStateAsync(`general.fuelsorts`, { val: JSON.stringify(response.data), ack: true });
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getFuelsorts]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -952,12 +955,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/currencies.json',
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getCurrencies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.setObjectNotExistsAsync('general', {
@@ -981,7 +984,7 @@ class Spritmonitor extends utils.Adapter {
 
 				this.setStateAsync(`general.currencies`, { val: JSON.stringify(response.data), ack: true });
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getCurrencies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -1004,12 +1007,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/quantityunits.json',
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getQuantityunits]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.setObjectNotExistsAsync('general', {
@@ -1033,7 +1036,7 @@ class Spritmonitor extends utils.Adapter {
 
 				this.setStateAsync(`general.quantityunits`, { val: JSON.stringify(response.data), ack: true });
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getQuantityunits]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -1056,12 +1059,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: 'https://api.spritmonitor.de/v1/companies.json',
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[getCompanies]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 
 				await this.setObjectNotExistsAsync('general', {
@@ -1085,7 +1088,7 @@ class Spritmonitor extends utils.Adapter {
 
 				this.setStateAsync(`general.companies`, { val: JSON.stringify(response.data), ack: true });
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[getCompanies]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -1530,12 +1533,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling.json?${data}`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[addFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 				if (response.data.errors) {
 					this.log.warn(`[addFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING SET.`);
@@ -1567,7 +1570,7 @@ class Spritmonitor extends utils.Adapter {
 					this.setState(`ACTIONS.ADD.percent`, 0, true);
 				}
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[addFueling]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -1587,12 +1590,12 @@ class Spritmonitor extends utils.Adapter {
 			method: 'GET',
 			url: `https://api.spritmonitor.de/v1/vehicle/${vehicleId}/tank/${tankId}/fueling/${fuelingId}.delete`,
 			headers: {
-				'Authorization': `Bearer ${this.config.applicationKey}`,
+				Authorization: `Bearer ${this.config.applicationKey}`,
 				'Application-Id': 'eea22a25be0bd8b3e1914ed0497af931',
-				'User-Agent': 'ioBroker Spritmonitor API Access'
+				'User-Agent': 'ioBroker Spritmonitor API Access',
 			},
 		})
-			.then(async (response) => {
+			.then(async response => {
 				this.log.debug(`[delFueling]: HTTP status response: ${response.status} ${response.statusText}; config: ${JSON.stringify(response.config)}; headers: ${JSON.stringify(response.headers)}; data: ${JSON.stringify(response.data)}`);
 				if (response.data.errors) {
 					this.log.info(`[delFueling]: ${JSON.stringify(response.data.errormessages)}. NOTHING DELETED.`);
@@ -1603,7 +1606,7 @@ class Spritmonitor extends utils.Adapter {
 					this.setState(`ACTIONS.DEL.fuelingId`, 0, true);
 				}
 			})
-			.catch((error) => {
+			.catch(error => {
 				if (error.response) {
 					// The request was made and the server responded with a status code that falls out of the range of 2xx
 					this.log.debug(`[delFueling]: HTTP status response: ${error.response.status}; headers: ${JSON.stringify(error.response.headers)}; data: ${JSON.stringify(error.response.data)}`);
@@ -1642,13 +1645,13 @@ class Spritmonitor extends utils.Adapter {
 			return val <= max;
 		} else if (max === null) {
 			return min <= val;
-		} else {
-			return min <= val && val <= max;
 		}
+		return min <= val && val <= max;
 	}
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
+	 *
 	 * @param {() => void} callback
 	 */
 	onUnload(callback) {
@@ -1663,6 +1666,7 @@ class Spritmonitor extends utils.Adapter {
 
 	/**
 	 * Is called if a subscribed state changes
+	 *
 	 * @param {string} id
 	 * @param {ioBroker.State | null | undefined} state
 	 */
@@ -1692,34 +1696,33 @@ class Spritmonitor extends utils.Adapter {
 					await this.getReminders();
 				}
 				if (command === 'ADD' && state.val) {
-
 					let APIstring = '';
 
 					const vehicleId = await this.getStateAsync(`ACTIONS.ADD.vehicleId`);
 					if (vehicleId && vehicleId.val) {
 						if (!vehicleIDs.includes(vehicleId.val)) {
-							this.log.info(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
+							this.log.warn(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
 							return;
 						}
 					} else {
-						this.log.info(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: vehicleId not valid. NOTHING SET.`);
 						return;
 					}
 					const tankId = await this.getStateAsync(`ACTIONS.ADD.tankId`);
 					if (tankId && tankId.val !== null) {
 						if (!this.numberInRange(0, null, tankId.val)) {
-							this.log.info(`[onStateChange]: tankId not valid. NOTHING SET.`);
+							this.log.warn(`[onStateChange]: tankId not valid. NOTHING SET.`);
 							return;
 						}
 					} else {
-						this.log.info(`[onStateChange]: tankId not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: tankId not valid. NOTHING SET.`);
 						return;
 					}
 					const date = await this.getStateAsync(`ACTIONS.ADD.date`);
 					if (date && this.dateIsValid(date.val)) {
 						APIstring += `date=${date.val}`;
 					} else {
-						this.log.info(`[onStateChange]: date not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: date not valid. NOTHING SET.`);
 						return;
 					}
 					const odometer = await this.getStateAsync(`ACTIONS.ADD.odometer`);
@@ -1727,28 +1730,28 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(0.1, null, odometer.val)) {
 							APIstring += `&odometer=${odometer.val}`;
 						} else {
-							this.log.info(`[onStateChange]: value odometer not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: value odometer not valid. Value not added.`);
 						}
 					}
 					const trip = await this.getStateAsync(`ACTIONS.ADD.trip`);
 					if (trip && this.numberInRange(0.1, null, trip.val)) {
 						APIstring += `&trip=${trip.val}`;
 					} else {
-						this.log.info(`[onStateChange]: value trip not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: value trip not valid. NOTHING SET.`);
 						return;
 					}
 					const quantity = await this.getStateAsync(`ACTIONS.ADD.quantity`);
 					if (quantity && this.numberInRange(0.1, null, quantity.val)) {
 						APIstring += `&quantity=${quantity.val}`;
 					} else {
-						this.log.info(`[onStateChange]: value quantity not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: value quantity not valid. NOTHING SET.`);
 						return;
 					}
 					const type = await this.getStateAsync(`ACTIONS.ADD.type`);
 					if (type && (type.val === 'invalid' || type.val === 'full' || type.val === 'notfull' || type.val === 'first')) {
 						APIstring += `&type=${type.val}`;
 					} else {
-						this.log.info(`[onStateChange]: type not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: type not valid. NOTHING SET.`);
 						return;
 					}
 					const price = await this.getStateAsync(`ACTIONS.ADD.price`);
@@ -1756,7 +1759,7 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(0.1, null, price.val)) {
 							APIstring += `&price=${price.val}`;
 						} else {
-							this.log.info(`[onStateChange]: price not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: price not valid. Value not added.`);
 						}
 					}
 					const currencyid = await this.getStateAsync(`ACTIONS.ADD.currencyid`);
@@ -1771,14 +1774,14 @@ class Spritmonitor extends utils.Adapter {
 					if (fuelsortid && this.numberInRange(0, 33, fuelsortid.val)) {
 						APIstring += `&fuelsortid=${fuelsortid.val}`;
 					} else {
-						this.log.info(`[onStateChange]: fuelsortid not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: fuelsortid not valid. NOTHING SET.`);
 						return;
 					}
 					const quantityunitid = await this.getStateAsync(`ACTIONS.ADD.quantityunitid`);
 					if (quantityunitid && this.numberInRange(1, 5, quantityunitid.val)) {
 						APIstring += `&quantityunitid=${quantityunitid.val}`;
 					} else {
-						this.log.info(`[onStateChange]: quantityunitid not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: quantityunitid not valid. NOTHING SET.`);
 						return;
 					}
 					const note = await this.getStateAsync(`ACTIONS.ADD.note`);
@@ -1802,7 +1805,7 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(0.1, null, bc_consumption.val)) {
 							APIstring += `&bc_consumption=${bc_consumption.val}`;
 						} else {
-							this.log.info(`[onStateChange]: bc_consumption not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: bc_consumption not valid. Value not added.`);
 						}
 					}
 					const bc_quantity = await this.getStateAsync(`ACTIONS.ADD.bc_quantity`);
@@ -1810,7 +1813,7 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(0.1, null, bc_quantity.val)) {
 							APIstring += `&bc_quantity=${bc_quantity.val}`;
 						} else {
-							this.log.info(`[onStateChange]: bc_quantity not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: bc_quantity not valid. Value not added.`);
 						}
 					}
 					const bc_speed = await this.getStateAsync(`ACTIONS.ADD.bc_speed`);
@@ -1818,7 +1821,7 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(0.1, null, bc_speed.val)) {
 							APIstring += `&bc_speed=${bc_speed.val}`;
 						} else {
-							this.log.info(`[onStateChange]: bc_speed not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: bc_speed not valid. Value not added.`);
 						}
 					}
 					const position_lat = await this.getStateAsync(`ACTIONS.ADD.position_lat`);
@@ -1827,7 +1830,7 @@ class Spritmonitor extends utils.Adapter {
 						if (this.numberInRange(-180, 180, position_lat.val) && this.numberInRange(-90, 90, position_long.val)) {
 							APIstring += `&position=${position_lat.val},${position_long.val}`;
 						} else {
-							this.log.info(`[onStateChange]: Position not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: Position not valid. Value not added.`);
 						}
 					}
 					const attributes = await this.getStateAsync(`ACTIONS.ADD.attributes`);
@@ -1836,10 +1839,10 @@ class Spritmonitor extends utils.Adapter {
 						let attributesMod = String(attributes.val).split(',');
 						attributesMod = attributesMod.filter((item, index) => attributesMod.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: attributesMod: ${attributesMod}`);
-						if (attributesMod.every((element) => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
+						if (attributesMod.every(element => ['wintertires', 'summertires', 'allyeartires', 'slow', 'normal', 'fast', 'ac', 'heating', 'trailer'].includes(element))) {
 							APIstring += `&attributes=${attributesMod}`;
 						} else {
-							this.log.info(`[onStateChange]: attribut(es) not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: attribut(es) not valid. Value not added.`);
 						}
 					}
 					const streets = await this.getStateAsync(`ACTIONS.ADD.streets`);
@@ -1849,17 +1852,17 @@ class Spritmonitor extends utils.Adapter {
 						streetsMod = streetsMod.filter((item, index) => streetsMod.indexOf(item) === index);
 						this.log.debug(`[onStateChange]: streetsMod: ${streetsMod}`);
 						// check if only allowed elements
-						if (streetsMod.every((element) => ['city', 'autobahn', 'land'].includes(element))) {
+						if (streetsMod.every(element => ['city', 'autobahn', 'land'].includes(element))) {
 							APIstring += `&streets=${streetsMod}`;
 						} else {
-							this.log.info(`[onStateChange]: streets not valid. Value not added.`);
+							this.log.warn(`[onStateChange]: streets not valid. Value not added.`);
 						}
 					}
 					const percent = await this.getStateAsync(`ACTIONS.ADD.percent`);
 					if (percent && this.numberInRange(1, 100, percent.val)) {
 						APIstring += `&percent=${percent.val}`;
 					} else {
-						this.log.info(`[onStateChange]: percent not valid. NOTHING SET.`);
+						this.log.warn(`[onStateChange]: percent not valid. NOTHING SET.`);
 						return;
 					}
 
@@ -1873,38 +1876,37 @@ class Spritmonitor extends utils.Adapter {
 					const vehicleId = await this.getStateAsync(`ACTIONS.DEL.vehicleId`);
 					if (vehicleId && vehicleId.val) {
 						if (!vehicleIDs.includes(vehicleId.val)) {
-							this.log.info(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
+							this.log.warn(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
 							return;
 						}
 					} else {
-						this.log.info(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
+						this.log.warn(`[onStateChange - DEL]: vehicleId not valid. NOTHING DELETED.`);
 						return;
 					}
 					const tankId = await this.getStateAsync(`ACTIONS.DEL.tankId`);
 					if (tankId && tankId.val !== null) {
 						if (!this.numberInRange(0, null, tankId.val)) {
-							this.log.info(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
+							this.log.warn(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
 							return;
 						}
 					} else {
-						this.log.info(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
+						this.log.warn(`[onStateChange - DEL]: tankId not valid. NOTHING DELETED.`);
 						return;
 					}
 					const fuelingId = await this.getStateAsync(`ACTIONS.DEL.fuelingId`);
 					if (fuelingId && fuelingId.val !== null) {
 						if (!this.numberInRange(0, null, fuelingId.val)) {
-							this.log.info(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
+							this.log.warn(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
 							return;
 						}
 					} else {
-						this.log.info(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
+						this.log.warn(`[onStateChange - DEL]: fuelingId not valid. NOTHING DELETED.`);
 						return;
 					}
 
 					await this.delFueling(vehicleId.val, tankId.val, fuelingId.val);
 					await this.getFuelings(vehicleId.val);
 				}
-
 			} else {
 				// The state was changed by system
 				this.log.debug(`[onStateChange]: state ${id} changed: ${state.val} (ack = ${state.ack}). NO ACTION PERFORMED.`);
@@ -1921,7 +1923,7 @@ if (require.main !== module) {
 	/**
 	 * @param {Partial<utils.AdapterOptions>} [options={}]
 	 */
-	module.exports = (options) => new Spritmonitor(options);
+	module.exports = options => new Spritmonitor(options);
 } else {
 	// otherwise start the instance directly
 	new Spritmonitor();
